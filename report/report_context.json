@@ -1,0 +1,204 @@
+{
+  "title_tr": "Normal Retina OCT Goruntulerinden Ogrenilen Konvolusyonel Autoencoder ile Patolojik Orneklerin Rekonstruksiyon Hatasi Tabanli Tespiti",
+  "title_en": "Reconstruction-Error-Based Detection of Pathological Retinal OCT Scans Using a Convolutional Autoencoder Trained on Normal Images",
+  "metrics": {
+    "threshold": 0.04614587146788836,
+    "auroc": 1.0,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0,
+    "fpr": 0.0,
+    "tn": 10,
+    "fp": 0,
+    "fn": 0,
+    "tp": 30
+  },
+  "thresholds": {
+    "95": 0.046132358722388744,
+    "97": 0.04614587146788836,
+    "99": 0.046159384213387965
+  },
+  "history": {
+    "train_loss": [
+      0.16957815984884897,
+      0.1538582593202591,
+      0.05581781640648842
+    ],
+    "val_loss": [
+      0.16499100625514984,
+      0.09163354337215424,
+      0.046007394790649414
+    ],
+    "best_epoch": 3,
+    "best_val_loss": 0.046007394790649414,
+    "training_time_sec": 0.61
+  },
+  "threshold_table": [
+    {
+      "percentile": 95,
+      "threshold": 0.046132,
+      "accuracy": 0.975,
+      "precision": 0.967742,
+      "recall": 1.0,
+      "f1": 0.983607,
+      "fpr": 0.1,
+      "auroc": 1.0
+    },
+    {
+      "percentile": 97,
+      "threshold": 0.046146,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "auroc": 1.0
+    },
+    {
+      "percentile": 99,
+      "threshold": 0.046159,
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1": 1.0,
+      "fpr": 0.0,
+      "auroc": 1.0
+    }
+  ],
+  "classwise_summary": [
+    {
+      "class_name": "CNV",
+      "sample_count": 10,
+      "patient_count": 5,
+      "mean_reconstruction_error": 0.058328,
+      "std_reconstruction_error": 7.9e-05
+    },
+    {
+      "class_name": "DME",
+      "sample_count": 10,
+      "patient_count": 5,
+      "mean_reconstruction_error": 0.060175,
+      "std_reconstruction_error": 0.000129
+    },
+    {
+      "class_name": "DRUSEN",
+      "sample_count": 10,
+      "patient_count": 5,
+      "mean_reconstruction_error": 0.052912,
+      "std_reconstruction_error": 8e-05
+    },
+    {
+      "class_name": "NORMAL",
+      "sample_count": 10,
+      "patient_count": 5,
+      "mean_reconstruction_error": 0.045975,
+      "std_reconstruction_error": 0.000108
+    }
+  ],
+  "dataset_summary": [
+    {
+      "split_name": "train",
+      "class_name": "NORMAL",
+      "image_count": 24,
+      "patient_count": 8
+    },
+    {
+      "split_name": "val",
+      "class_name": "NORMAL",
+      "image_count": 6,
+      "patient_count": 2
+    },
+    {
+      "split_name": "test",
+      "class_name": "CNV",
+      "image_count": 10,
+      "patient_count": 5
+    },
+    {
+      "split_name": "test",
+      "class_name": "DME",
+      "image_count": 10,
+      "patient_count": 5
+    },
+    {
+      "split_name": "test",
+      "class_name": "DRUSEN",
+      "image_count": 10,
+      "patient_count": 5
+    },
+    {
+      "split_name": "test",
+      "class_name": "NORMAL",
+      "image_count": 10,
+      "patient_count": 5
+    }
+  ],
+  "references": [
+    {
+      "key": "[1]",
+      "citation": "Kermany DS, Goldbaum M, Cai W, et al. Identifying Medical Diagnoses and Treatable Diseases by Image-Based Deep Learning. Cell. 2018;172(5):1122-1131. doi:10.1016/j.cell.2018.02.010",
+      "url": "https://doi.org/10.1016/j.cell.2018.02.010",
+      "group": "OCT classification"
+    },
+    {
+      "key": "[2]",
+      "citation": "Kermany DS, Zhang K, Goldbaum M. Large Dataset of Labeled Optical Coherence Tomography (OCT) and Chest X-Ray Images. Mendeley Data. 2018;v3. doi:10.17632/rscbjbr9sj.3",
+      "url": "https://doi.org/10.17632/rscbjbr9sj.3",
+      "group": "Dataset"
+    },
+    {
+      "key": "[3]",
+      "citation": "Litjens G, Kooi T, Bejnordi BE, et al. A survey on deep learning in medical image analysis. Med Image Anal. 2017;42:60-88. doi:10.1016/j.media.2017.07.005",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/28778026/",
+      "group": "Medical imaging survey"
+    },
+    {
+      "key": "[4]",
+      "citation": "Schlegl T, Seebock P, Waldstein SM, Schmidt-Erfurth U, Langs G. Unsupervised Anomaly Detection with Generative Adversarial Networks to Guide Marker Discovery. arXiv. 2017. doi:10.48550/arXiv.1703.05921",
+      "url": "https://arxiv.org/abs/1703.05921",
+      "group": "Medical anomaly detection"
+    },
+    {
+      "key": "[5]",
+      "citation": "Akcay S, Atapour-Abarghouei A, Breckon TP. GANomaly: Semi-Supervised Anomaly Detection via Adversarial Training. arXiv. 2018. doi:10.48550/arXiv.1805.06725",
+      "url": "https://arxiv.org/abs/1805.06725",
+      "group": "Medical anomaly detection"
+    },
+    {
+      "key": "[6]",
+      "citation": "Zavrtanik V, Kristan M, Skocaj D. DRAEM: A Discriminatively Trained Reconstruction Embedding for Surface Anomaly Detection. ICCV. 2021.",
+      "url": "https://openaccess.thecvf.com/content/ICCV2021/html/Zavrtanik_DRAEM_-_A_Discriminatively_Trained_Reconstruction_Embedding_for_Surface_Anomaly_ICCV_2021_paper.html",
+      "group": "Medical anomaly detection"
+    },
+    {
+      "key": "[7]",
+      "citation": "Seebock P, Orlando JI, Schlegl T, et al. Exploiting Epistemic Uncertainty of Anatomy Segmentation for Anomaly Detection in Retinal OCT. IEEE Trans Med Imaging. 2019. doi:10.1109/TMI.2019.2919951",
+      "url": "https://arxiv.org/abs/1905.12806",
+      "group": "Retinal OCT anomaly detection"
+    },
+    {
+      "key": "[8]",
+      "citation": "Zhou K, Li J, Luo W, et al. Proxy-bridged Image Reconstruction Network for Anomaly Detection in Medical Images. arXiv. 2021. doi:10.48550/arXiv.2110.01761",
+      "url": "https://arxiv.org/abs/2110.01761",
+      "group": "Medical anomaly detection"
+    },
+    {
+      "key": "[9]",
+      "citation": "Luo Y, Ma Y, Yang Z. Multi-resolution auto-encoder for anomaly detection of retinal imaging. Phys Eng Sci Med. 2024;47(2):517-529. doi:10.1007/s13246-023-01381-x",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/38285270/",
+      "group": "Retinal OCT anomaly detection"
+    },
+    {
+      "key": "[10]",
+      "citation": "Wang J, Li W, Chen Y, et al. Weakly supervised anomaly segmentation in retinal OCT images using an adversarial learning approach. Biomed Opt Express. 2021;12(8):4713-4729. doi:10.1364/BOE.426803",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/34513220/",
+      "group": "Retinal OCT anomaly detection"
+    }
+  ],
+  "generated_files": [
+    "report\\ara_rapor_draft.md",
+    "report\\ara_rapor_draft.docx",
+    "report\\literature_notes.md"
+  ]
+}
