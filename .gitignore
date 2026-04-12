@@ -8,7 +8,4 @@ Thumbs.db
 .venv/
 venv/
 
-data/
-outputs/
-
 ~$*.docx

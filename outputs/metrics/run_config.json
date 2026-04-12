@@ -1,0 +1,23 @@
+{
+  "data_root": "data/mock_oct2017",
+  "output_dir": "outputs",
+  "report_dir": "report",
+  "report_template": "IEEE_Turkey_TUAC_Template_TR_2016_Final.docx",
+  "seed": 42,
+  "image_size": 128,
+  "val_ratio": 0.2,
+  "batch_size": 8,
+  "learning_rate": 0.001,
+  "epochs": 3,
+  "early_stopping_patience": 8,
+  "latent_dim": 128,
+  "num_workers": 0,
+  "threshold_percentiles": [
+    95,
+    97,
+    99
+  ],
+  "default_percentile": 97,
+  "train_split_name": "train",
+  "test_split_name": "test"
+}
