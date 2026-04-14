@@ -2,43 +2,43 @@ Retina OCT anomaly detection experiment summary
 ===============================================
 
 Configuration
-  data_root          : data/mock_oct2017
+  data_root          : data\oct2017
   image_size         : 128
-  batch_size         : 8
+  batch_size         : 32
   latent_dim         : 128
-  default_percentile : p97
+  default_percentile : p95
 
 Dataset summary
 split_name class_name  image_count  patient_count
-     train     NORMAL           24              8
-       val     NORMAL            6              2
-      test        CNV           10              5
-      test        DME           10              5
-      test     DRUSEN           10              5
-      test     NORMAL           10              5
+     train     NORMAL        40715           2747
+       val     NORMAL        10425            687
+      test        CNV          250            178
+      test        DME          250            167
+      test     DRUSEN          250            169
+      test     NORMAL          250            171
 
 Training summary
-  best_epoch         : 3
-  best_val_loss      : 0.046007
-  training_time_sec  : 0.61
+  best_epoch         : 37
+  best_val_loss      : 0.000745
+  training_time_sec  : 6581.56
 
 Thresholds
-  p95: 0.046132
-  p97: 0.046146
-  p99: 0.046159
+  p95: 0.001352
+  p97: 0.001563
+  p99: 0.002086
 
 Selected-threshold metrics
-  AUROC              : 1.0000
-  Accuracy           : 1.0000
-  Precision          : 1.0000
-  Recall             : 1.0000
-  F1                 : 1.0000
-  FPR                : 0.0000
-  Confusion          : TN=10 FP=0 FN=0 TP=30
+  AUROC              : 0.9108
+  Accuracy           : 0.7670
+  Precision          : 0.9743
+  Recall             : 0.7080
+  F1                 : 0.8201
+  FPR                : 0.0560
+  Confusion          : TN=236 FP=14 FN=219 TP=531
 
 Class-wise reconstruction summary
 class_name  sample_count  patient_count  mean_reconstruction_error  std_reconstruction_error
-       CNV            10              5                   0.058328                  0.000079
-       DME            10              5                   0.060175                  0.000129
-    DRUSEN            10              5                   0.052912                  0.000080
-    NORMAL            10              5                   0.045975                  0.000108
+       CNV           250            178                   0.002921                  0.001294
+       DME           250            167                   0.002592                  0.001554
+    DRUSEN           250            169                   0.001317                  0.000643
+    NORMAL           250            171                   0.000864                  0.000292

@@ -26,7 +26,7 @@ CONFIG: dict[str, Any] = {
     "latent_dim": 128,
     "num_workers": 0,
     "threshold_percentiles": [95, 97, 99],
-    "default_percentile": 97,
+    "default_percentile": 95,
     "train_split_name": "train",
     "test_split_name": "test",
 }

@@ -2,136 +2,210 @@
   "title_tr": "Normal Retina OCT Goruntulerinden Ogrenilen Konvolusyonel Autoencoder ile Patolojik Orneklerin Rekonstruksiyon Hatasi Tabanli Tespiti",
   "title_en": "Reconstruction-Error-Based Detection of Pathological Retinal OCT Scans Using a Convolutional Autoencoder Trained on Normal Images",
   "metrics": {
-    "threshold": 0.04614587146788836,
-    "auroc": 1.0,
-    "accuracy": 1.0,
-    "precision": 1.0,
-    "recall": 1.0,
-    "f1": 1.0,
-    "fpr": 0.0,
-    "tn": 10,
-    "fp": 0,
-    "fn": 0,
-    "tp": 30
+    "threshold": 0.00135199069045484,
+    "auroc": 0.9108213333333333,
+    "accuracy": 0.767,
+    "precision": 0.9743119266055046,
+    "recall": 0.708,
+    "f1": 0.8200772200772201,
+    "fpr": 0.056,
+    "tn": 236,
+    "fp": 14,
+    "fn": 219,
+    "tp": 531
   },
   "thresholds": {
-    "95": 0.046132358722388744,
-    "97": 0.04614587146788836,
-    "99": 0.046159384213387965
+    "95": 0.00135199069045484,
+    "97": 0.0015631902962923007,
+    "99": 0.002085950281471015
   },
   "history": {
     "train_loss": [
-      0.16957815984884897,
-      0.1538582593202591,
-      0.05581781640648842
+      0.011629716067700841,
+      0.0032752440824711736,
+      0.0022647658146880763,
+      0.0018210803021650648,
+      0.001584584335493452,
+      0.0014386712120731315,
+      0.0013222815044305236,
+      0.001233637966579882,
+      0.001170927293190462,
+      0.0011009686794933734,
+      0.0010561953128277652,
+      0.0010039862048960664,
+      0.0009818833302347356,
+      0.0009421417071178887,
+      0.0009181859160941696,
+      0.0008890583619919009,
+      0.0008739846719229434,
+      0.0008565233404464845,
+      0.0008306692040089738,
+      0.0008169154778953692,
+      0.0008047140946984726,
+      0.0007951190825835388,
+      0.000775903855911881,
+      0.0007704071690279583,
+      0.0007609346572550026,
+      0.0007519312144887198,
+      0.0007397837389598954,
+      0.0007327223866053125,
+      0.0007258700512146139,
+      0.000721815193792098,
+      0.0007095847558927825,
+      0.00070298936307347,
+      0.0007005519856422376,
+      0.0006896897635803388,
+      0.0006856435865977438,
+      0.0006814447665871508,
+      0.0006749541169575374,
+      0.000667039511851572,
+      0.0006663825788137624,
+      0.0006616901991379702
     ],
     "val_loss": [
-      0.16499100625514984,
-      0.09163354337215424,
-      0.046007394790649414
+      0.00416250931657404,
+      0.0027695851292175284,
+      0.002089716865786081,
+      0.0017165420495411404,
+      0.0017545758131824486,
+      0.0014652059418071124,
+      0.0014311397977606606,
+      0.0012410938151725692,
+      0.0012082379350407447,
+      0.0012320431738497791,
+      0.0010536178544931988,
+      0.0010230784778476512,
+      0.0010193149685386203,
+      0.0010326504463673853,
+      0.0009660197071992396,
+      0.0009626085738030573,
+      0.0008959622714083365,
+      0.0009105075847265943,
+      0.000898419170946383,
+      0.0009197310304684605,
+      0.0008633949006773638,
+      0.0009166400062760038,
+      0.0008582834695126388,
+      0.000858525467363166,
+      0.0008244342048936111,
+      0.0008224788533436576,
+      0.0008071511569131407,
+      0.0008020352321449105,
+      0.0008438397543806341,
+      0.0008169263936981237,
+      0.0008090584982316093,
+      0.0008240337233557153,
+      0.0007996519257446273,
+      0.0007792466552034735,
+      0.0007920783769888736,
+      0.0007663385834538197,
+      0.0007450278040705074,
+      0.0007531246483299158,
+      0.0007456375485312917,
+      0.0007488165764814819
     ],
-    "best_epoch": 3,
-    "best_val_loss": 0.046007394790649414,
-    "training_time_sec": 0.61
+    "best_epoch": 37,
+    "best_val_loss": 0.0007450278040705074,
+    "training_time_sec": 6581.56
   },
   "threshold_table": [
     {
       "percentile": 95,
-      "threshold": 0.046132,
-      "accuracy": 0.975,
-      "precision": 0.967742,
-      "recall": 1.0,
-      "f1": 0.983607,
-      "fpr": 0.1,
-      "auroc": 1.0
+      "threshold": 0.001352,
+      "accuracy": 0.767,
+      "precision": 0.974312,
+      "recall": 0.708,
+      "f1": 0.820077,
+      "fpr": 0.056,
+      "auroc": 0.910821
     },
     {
       "percentile": 97,
-      "threshold": 0.046146,
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "fpr": 0.0,
-      "auroc": 1.0
+      "threshold": 0.001563,
+      "accuracy": 0.714,
+      "precision": 0.981328,
+      "recall": 0.630667,
+      "f1": 0.767857,
+      "fpr": 0.036,
+      "auroc": 0.910821
     },
     {
       "percentile": 99,
-      "threshold": 0.046159,
-      "accuracy": 1.0,
-      "precision": 1.0,
-      "recall": 1.0,
-      "f1": 1.0,
-      "fpr": 0.0,
-      "auroc": 1.0
+      "threshold": 0.002086,
+      "accuracy": 0.593,
+      "precision": 0.997101,
+      "recall": 0.458667,
+      "f1": 0.628311,
+      "fpr": 0.004,
+      "auroc": 0.910821
     }
   ],
   "classwise_summary": [
     {
       "class_name": "CNV",
-      "sample_count": 10,
-      "patient_count": 5,
-      "mean_reconstruction_error": 0.058328,
-      "std_reconstruction_error": 7.9e-05
+      "sample_count": 250,
+      "patient_count": 178,
+      "mean_reconstruction_error": 0.002921,
+      "std_reconstruction_error": 0.001294
     },
     {
       "class_name": "DME",
-      "sample_count": 10,
-      "patient_count": 5,
-      "mean_reconstruction_error": 0.060175,
-      "std_reconstruction_error": 0.000129
+      "sample_count": 250,
+      "patient_count": 167,
+      "mean_reconstruction_error": 0.002592,
+      "std_reconstruction_error": 0.001554
     },
     {
       "class_name": "DRUSEN",
-      "sample_count": 10,
-      "patient_count": 5,
-      "mean_reconstruction_error": 0.052912,
-      "std_reconstruction_error": 8e-05
+      "sample_count": 250,
+      "patient_count": 169,
+      "mean_reconstruction_error": 0.001317,
+      "std_reconstruction_error": 0.000643
     },
     {
       "class_name": "NORMAL",
-      "sample_count": 10,
-      "patient_count": 5,
-      "mean_reconstruction_error": 0.045975,
-      "std_reconstruction_error": 0.000108
+      "sample_count": 250,
+      "patient_count": 171,
+      "mean_reconstruction_error": 0.000864,
+      "std_reconstruction_error": 0.000292
     }
   ],
   "dataset_summary": [
     {
       "split_name": "train",
       "class_name": "NORMAL",
-      "image_count": 24,
-      "patient_count": 8
+      "image_count": 40715,
+      "patient_count": 2747
     },
     {
       "split_name": "val",
       "class_name": "NORMAL",
-      "image_count": 6,
-      "patient_count": 2
+      "image_count": 10425,
+      "patient_count": 687
     },
     {
       "split_name": "test",
       "class_name": "CNV",
-      "image_count": 10,
-      "patient_count": 5
+      "image_count": 250,
+      "patient_count": 178
     },
     {
       "split_name": "test",
       "class_name": "DME",
-      "image_count": 10,
-      "patient_count": 5
+      "image_count": 250,
+      "patient_count": 167
     },
     {
       "split_name": "test",
       "class_name": "DRUSEN",
-      "image_count": 10,
-      "patient_count": 5
+      "image_count": 250,
+      "patient_count": 169
     },
     {
       "split_name": "test",
       "class_name": "NORMAL",
-      "image_count": 10,
-      "patient_count": 5
+      "image_count": 250,
+      "patient_count": 171
     }
   ],
   "references": [
@@ -197,8 +271,10 @@
     }
   ],
   "generated_files": [
-    "report\\ara_rapor_draft.md",
-    "report\\ara_rapor_draft.docx",
-    "report\\literature_notes.md"
+    "C:\\Users\\koray\\Masaüstü\\Okul\\Uretken Yapay Zekaya Giris\\Uretken Proje\\report\\ara_rapor_draft.md",
+    "C:\\Users\\koray\\Masaüstü\\Okul\\Uretken Yapay Zekaya Giris\\Uretken Proje\\report\\ara_rapor_draft.docx",
+    "C:\\Users\\koray\\Masaüstü\\Okul\\Uretken Yapay Zekaya Giris\\Uretken Proje\\report\\literature_notes.md",
+    "C:\\Users\\koray\\Masaüstü\\Okul\\Uretken Yapay Zekaya Giris\\Uretken Proje\\outputs\\figures\\retina_oct_pipeline.png",
+    "C:\\Users\\koray\\Masaüstü\\Okul\\Uretken Yapay Zekaya Giris\\Uretken Proje\\outputs\\figures\\report_results_overview.png"
   ]
 }

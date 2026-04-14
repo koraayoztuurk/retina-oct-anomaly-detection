@@ -6,11 +6,11 @@
 
 ## Ozet
 
-Bu calismada, retinal OCT goruntulerinde patolojik ornekleri etiketlenmis patoloji siniflariyla dogrudan ogrenmek yerine, yalnizca normal orneklerden ogrenilen bir convolutional autoencoder ile reconstruction error tabanli anomaly detection yaklasimi gelistirilmistir. Kermany OCT2017 veri kumesindeki train/NORMAL goruntuleri hasta bazli olarak egitim ve validation alt kumelerine ayrilmis, model yalnizca normal anatominin dagilimini ogrenmistir. Test asamasinda NORMAL, CNV, DME ve DRUSEN goruntuleri reconstruction error ile puanlanmis ve validation normal error dagilimindan elde edilen percentil esikleriyle ikili karar uretilmistir. Bu ara rapor surumunde temel model 128x128 gri tonlamali B-scan'ler uzerinde egitilmis, AUROC ana metrik olarak alinmis ve precision, recall, F1, accuracy ile FPR de raporlanmistir. Elde edilen ilk bulgular, patolojik siniflarin ortalama reconstruction error degerlerinin normal sinifa gore sistematik olarak daha yuksek oldugunu gostermektedir. Bu yapi, final asamada daha guclu varyasyonel veya memory-augmented modeller icin saglam bir baseline sunmaktadir.
+Bu calismada, retinal OCT goruntulerinde patolojik ornekleri etiketlenmis patoloji siniflariyla dogrudan ogrenmek yerine, yalnizca normal orneklerden ogrenilen bir convolutional autoencoder ile reconstruction error tabanli anomaly detection yaklasimi gelistirilmistir. Kermany OCT2017 veri kumesindeki train/NORMAL goruntuleri hasta bazli olarak egitim ve validation alt kumelerine ayrilmis, model yalnizca normal anatominin dagilimini ogrenmistir. Test asamasinda NORMAL, CNV, DME ve DRUSEN goruntuleri reconstruction error ile puanlanmis ve validation normal error dagilimindan elde edilen percentil esikleriyle ikili karar uretilmistir. Bu ara rapor surumunde temel model 128x128 gri tonlamali B-scan'ler uzerinde egitilmis, AUROC ana metrik olarak alinmis ve precision, recall, F1, accuracy ile FPR de raporlanmistir. Gercek OCT2017 deneyi sonunda secilen p95 esiginde AUROC 0.9108 ve F1 0.8201 elde edilmistir. Elde edilen ilk bulgular, patolojik siniflarin ortalama reconstruction error degerlerinin normal sinifa gore sistematik olarak daha yuksek oldugunu gostermektedir.
 
 ## Abstract
 
-This study investigates reconstruction-error-based anomaly detection for retinal OCT images using a convolutional autoencoder trained only on normal samples. Instead of learning a supervised pathology classifier, the model learns the appearance distribution of healthy retinal anatomy from the Kermany OCT2017 dataset. The training split uses only normal scans and a patient-level validation split is used to estimate operating thresholds from normal reconstruction-error percentiles. During testing, NORMAL, CNV, DME, and DRUSEN scans are scored according to reconstruction error, and anomaly decisions are produced with validation-derived thresholds. The current baseline operates on grayscale 128x128 B-scans and reports AUROC as the primary metric, supported by accuracy, precision, recall, F1-score, and false-positive rate. Preliminary results indicate that pathological categories consistently produce larger reconstruction errors than normal scans, showing that a normal-only autoencoder can serve as a viable early screening mechanism. This baseline also provides a reproducible starting point for future extensions such as variational autoencoders, localization-aware residual maps, or knowledge-distillation-based anomaly detectors.
+This study investigates reconstruction-error-based anomaly detection for retinal OCT images using a convolutional autoencoder trained only on normal samples. Instead of learning a supervised pathology classifier, the model learns the appearance distribution of healthy retinal anatomy from the Kermany OCT2017 dataset. The training split uses only normal scans and a patient-level validation split is used to estimate operating thresholds from normal reconstruction-error percentiles. During testing, NORMAL, CNV, DME, and DRUSEN scans are scored according to reconstruction error, and anomaly decisions are produced with validation-derived thresholds. On the real OCT2017 experiment, the selected p95 operating point reaches AUROC 0.9108 and F1-score 0.8201. These findings indicate that a normal-only autoencoder can serve as a meaningful early baseline for retinal anomaly screening.
 
 ## Anahtar Kelimeler / Keywords
 
@@ -20,15 +20,25 @@ retinal OCT, anomaly detection, autoencoder, reconstruction error, medical imagi
 
 Retinal hastaliklarin erken tespiti, geri donulmez gorme kaybini azaltmak icin kritik onemdedir. Optik koherens tomografi (OCT), retina tabakalarini yuksek cozunurlukte gosterebildigi icin klinik pratikte sik kullanilan bir goruntuleme yontemidir. Ancak OCT verisinin elle yorumlanmasi zaman alici oldugu gibi, genis tarama programlarinda yuksek uzman emegi gerektirir [1]. Son yillarda derin ogrenme tabanli denetimli modeller OCT siniflandirmasinda guclu sonuclar vermis olsa da, bunlar genellikle her patoloji icin etiketli veri gerektirir [1], [3]. Bu durum, daha once gorulmemis veya yeterince temsil edilmeyen anomalilerin tespitini zorlastirir.
 
-Bu projede problem, "normal anatominin ogrenilmesi ve ondan sapmalarin reconstruction error ile yakalanmasi" olarak ele alinmistir. Bu secim, sinif etiketi bagimliligini azaltmasi ve yeni/az gorulen patolojilere karsi daha esnek bir tarama mantigi sunmasi nedeniyle onemlidir. Ara rapor kapsaminda amacimiz, yalnizca normal retina OCT goruntuleri ile egitilen bir convolutional autoencoder'in patolojik test goruntulerini anlamli bicimde ayristirabildigini gosteren, tekrar uretilebilir bir baseline sistem kurmaktir.
+Bu projede problem, normal anatominin ogrenilmesi ve ondan sapmalarin reconstruction error ile yakalanmasi olarak ele alinmistir. Ara rapor kapsamindaki amacimiz, yalnizca normal retina OCT goruntuleri ile egitilen bir convolutional autoencoder'in patolojik test goruntulerini anlamli bicimde ayristirabildigini gosteren, tekrar uretilebilir bir baseline sistem kurmaktir. Bu calismanin farki; patient-level validation, validation-derived threshold secimi ve gercek OCT verisiyle uctan uca calisan deney boru hattini ayni raporda birlestirmesidir.
 
 ## 2. Ilgili Calismalar
 
 OCT alaninda derin ogrenme tabanli hastalik siniflandirmasi icin en cok atif alan calismalardan biri Kermany ve ark. tarafindan sunulan Cell 2018 makalesidir [1]. Bu calisma, ayni zamanda bu projede kullanilan halka acik OCT veri kumesinin temellerini de olusturmaktadir [2]. Literaturde bunun devaminda cok sayida denetimli retinal hastalik tespit modeli onerilmis ve OCT'nin otomatik analiz icin uygunlugu guclu bicimde ortaya konmustur [3].
 
-Anomaly detection literaturunde ise normal veriyle egitim yapip anomalileri dagilim disi ornekler olarak ele alan reconstructive ve adversarial yontemler on plana cikmistir. AnoGAN [4] ve GANomaly [5], normal dagilimi modelleyip anomalileri yuksek hata veya latent tutarsizlik ile yakalama mantigini sistematiklestiren erken ve etkili yaklasimlardandir. Daha sonra DRAEM [6] ve ProxyAno [8] gibi yontemler, reconstruction tabanli yaklasimlarin anomalileri fazla iyi yeniden olusturma egilimini azaltmaya odaklanmistir.
+Anomaly detection literaturunde ise normal veriyle egitim yapip anomalileri dagilim disi ornekler olarak ele alan reconstructive ve adversarial yontemler on plana cikmistir. AnoGAN [4] ve GANomaly [5] gibi yaklasimlar normal dagilimi modelleme mantigini sistematiklestirmistir. DRAEM [6] ve ProxyAno [8] ise reconstruction tabanli yapilarin daha ayirt edici hale gelmesine odaklanmistir. Retinal OCT ozelinde Seebock ve ark. [7], Luo ve ark. [9] ve Wang ve ark. [10] gibi calismalar bu alanin artik yalnizca genel anomaly detection degil, retina anatomisine ozel cozumler de gerektirdigini gostermektedir.
 
-Retinal OCT anomaly detection baglaminda Seebock ve ark. [7] epistemik belirsizligi anatomi sapmalarini yakalamak icin kullanmis, Luo ve ark. [9] multi-resolution autoencoder ile farkli olceklerdeki lezyon ipuclarini birlestirmistir. Wang ve ark. [10] ise zayif denetimli adversarial reconstruction tabanli bir yapiyla lesion segmentation tarafina ilerlemistir. Bu proje, bu literaturun daha sade fakat uygulanabilir bir koluna odaklanmakta; yalnizca normal scans ile egitilen, patient-level split kullanan ve validation-derived threshold ile karar veren bir convolutional autoencoder baseline'i sunmaktadir.
+Kim ne yapmis ve bu proje neyi farkli yapiyor sorusunu daha acik gostermek icin Tablo 1 verilmistir.
+
+Tablo 1. Ilgili calismalar ve bu projeden farklari.
+
+| study | focus | difference |
+| --- | --- | --- |
+| Kermany et al. [1] | Supervised OCT classification | Requires pathology labels, unlike our normal-only anomaly setting. |
+| AnoGAN [4] | GAN-based anomaly detection | General anomaly detection reference, not retinal OCT-specific. |
+| Seebock et al. [7] | Uncertainty-based OCT anomaly detection | Uses anatomy segmentation uncertainty instead of direct reconstruction error. |
+| Luo et al. [9] | Multi-resolution retinal autoencoder | More advanced retinal anomaly model; our work is a simpler reproducible baseline. |
+| This project | Normal-only OCT anomaly scoring | Patient-level validation split and percentile-based threshold selection on real OCT2017. |
 
 ## 3. Yontem
 
@@ -46,64 +56,90 @@ Model, dort asamali bir convolutional encoder-decoder yapisindan olusmaktadir. E
 
 ### 3.4 Egitim ve esikleme
 
-Model `Adam` optimizer ve `MSE` reconstruction loss ile egitilmistir. En fazla `40` epoch ve `8` patience degerli early stopping kullanilmistir. Validation asamasinda yalnizca normal orneklerin reconstruction error dagilimi incelenmis; p95, p97 ve p99 esikleri hesaplanmistir. Ana operasyon noktasi olarak p97 secilmistir. Boylece threshold seciminde test verisi kullanilmamis ve leakage engellenmistir.
+Model `Adam` optimizer ve `MSE` reconstruction loss ile egitilmistir. En fazla `40` epoch ve `8` patience degerli early stopping kullanilmistir. Validation asamasinda yalnizca normal orneklerin reconstruction error dagilimi incelenmis; p95, p97 ve p99 esikleri hesaplanmistir. Ana operasyon noktasi olarak p95 secilmistir. Boylece threshold seciminde test verisi kullanilmamis ve leakage engellenmistir.
+
+### 3.5 Degerlendirme olcutleri ve deney kurulumu
+
+Ana basari olcutu olarak AUROC secilmistir; cunku anomaly detection senaryosunda threshold'dan bagimsiz ayristirma gucunu yansitir. Bunun yaninda accuracy, precision, recall, F1 ve false positive rate de raporlanmistir. Precision ve recall birlikte yorumlanmis, F1 ise dengeli operasyon noktasi seciminde kullanilmistir. Gercek deney kosusu yaklasik 109.7 dakika surmus ve en iyi validation sonucu 37. epoch'ta elde edilmistir. Deney kurulumu Tablo 2'de ozetlenmistir.
+
+Tablo 2. Deney kurulumu ve temel hiperparametreler.
+
+| setting | value |
+| --- | --- |
+| Train data | 40715 NORMAL images |
+| Validation data | 10425 NORMAL images |
+| Test data | 1000 images |
+| Input size | 128x128 grayscale |
+| Latent dimension | 128 |
+| Optimizer | Adam, lr=0.001 |
+| Max epochs / patience | 40 / 8 |
+| Selected threshold | p95 |
+| Training duration | 109.7 minutes |
+
+### 3.6 Sistem akisi
+
+Onerilen is akisi bes adimdan olusmaktadir: normal verinin secilmesi, on isleme, autoencoder egitimi, validation error dagilimindan esik secimi ve testte anomaly scoring. Raporun sonundaki Sekil 1 bu boru hattini gorsel olarak ozetlemektedir. Bu sema, odevde istenen sistem mimarisi beklentisini karsilamak icin eklenmistir.
 
 ## 4. Ara Sonuclar
 
-Bu ara raporda uretilen temel ciktilar; egitim/validation loss grafigi, validation reconstruction error histogrami, test error dagilimi, ROC curve, confusion matrix ve ornek reconstruction-residual goruntuleridir. Deney sonunda secilen p97 esiginde elde edilen metrikler asagidaki gibidir:
+Bu ara raporda uretilen temel ciktilar; egitim/validation loss grafigi, validation reconstruction error histogrami, test error dagilimi, ROC curve, confusion matrix ve ornek reconstruction-residual goruntuleridir. Deney sonunda secilen p95 esiginde elde edilen metrikler asagidaki gibidir:
 
 | Metrik | Deger |
 |---|---:|
-| AUROC | 1.0000 |
-| Accuracy | 1.0000 |
-| Precision | 1.0000 |
-| Recall | 1.0000 |
-| F1 | 1.0000 |
-| FPR | 0.0000 |
-| Best epoch | 3 |
-| Best validation loss | 0.046007 |
+| AUROC | 0.9108 |
+| Accuracy | 0.7670 |
+| Precision | 0.9743 |
+| Recall | 0.7080 |
+| F1 | 0.8201 |
+| FPR | 0.0560 |
+| Best epoch | 37 |
+| Best validation loss | 0.000745 |
 
 Validation percentil esikleri:
 
 | percentile | threshold | accuracy | precision | recall | f1 | fpr | auroc |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 95 | 0.0461 | 0.975 | 0.9677 | 1.0 | 0.9836 | 0.1 | 1.0 |
-| 97 | 0.0461 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 | 1.0 |
-| 99 | 0.0462 | 1.0 | 1.0 | 1.0 | 1.0 | 0.0 | 1.0 |
+| 95 | 0.0014 | 0.767 | 0.9743 | 0.708 | 0.8201 | 0.056 | 0.9108 |
+| 97 | 0.0016 | 0.714 | 0.9813 | 0.6307 | 0.7679 | 0.036 | 0.9108 |
+| 99 | 0.0021 | 0.593 | 0.9971 | 0.4587 | 0.6283 | 0.004 | 0.9108 |
 
 Sinif bazli reconstruction error ozeti:
 
 | class_name | sample_count | patient_count | mean_reconstruction_error | std_reconstruction_error |
 | --- | --- | --- | --- | --- |
-| CNV | 10 | 5 | 0.058328 | 7.9e-05 |
-| DME | 10 | 5 | 0.060175 | 0.000129 |
-| DRUSEN | 10 | 5 | 0.052912 | 8e-05 |
-| NORMAL | 10 | 5 | 0.045975 | 0.000108 |
+| CNV | 250 | 178 | 0.002921 | 0.001294 |
+| DME | 250 | 167 | 0.002592 | 0.001554 |
+| DRUSEN | 250 | 169 | 0.001317 | 0.000643 |
+| NORMAL | 250 | 171 | 0.000864 | 0.000292 |
 
 Veri bolme ozeti:
 
 | split_name | class_name | image_count | patient_count |
 | --- | --- | --- | --- |
-| train | NORMAL | 24 | 8 |
-| val | NORMAL | 6 | 2 |
-| test | CNV | 10 | 5 |
-| test | DME | 10 | 5 |
-| test | DRUSEN | 10 | 5 |
-| test | NORMAL | 10 | 5 |
+| train | NORMAL | 40715 | 2747 |
+| val | NORMAL | 10425 | 687 |
+| test | CNV | 250 | 178 |
+| test | DME | 250 | 167 |
+| test | DRUSEN | 250 | 169 |
+| test | NORMAL | 250 | 171 |
 
-Uretilen sekiller `outputs/figures/` ve `outputs/reconstructions/` altinda kaydedilmektedir. Ozellikle normal ve patolojik goruntuler arasindaki reconstruction error ayrimi, modelin anomaly scoring icin kullanilabilir oldugunu gostermektedir.
+Sonuclar yalnizca tablo duzeyinde degil, yorum duzeyinde de anlamlidir. p95 esigi p97 ve p99'a gore daha yuksek recall ve F1 vermistir; bu nedenle ara rapor icin daha dengeli operasyon noktasi olarak secilmistir. CNV ve DME siniflari NORMAL goruntulerden belirgin sekilde ayrisirken, DRUSEN sinifinin error dagilimi normale daha yakindir. Bu durum, bazi patolojilerin reconstruction tabanli yaklasimlarda digerlerine gore daha zor ayristigini gostermektedir.
+
+Rapor sonunda verilen Sekil 2, egitim egrisi, ROC performansi, error dagilimi ve reconstruction orneklerini bir araya getirerek ara sonuclarin gorsel ozetini sunmaktadir.
 
 ## 5. Tartisma
 
-Baseline model, gorece basit olmasina ragmen normal anatomi dagilimini ogrenerek patolojik siniflarin reconstruction error degerlerini yukseltebilmektedir. Bununla birlikte reconstruction tabanli yontemlerin iyi bilinen bir siniri vardir: guclu decoder yapilari bazen anomalileri de fazla iyi yeniden uretebilir [4], [8]. Ayrica Kermany veri kumesi image-level etiketler icerir; bu nedenle lokal lesion segmentasyonu icin dogrudan pixel-level ground truth bulunmamaktadir. Dolayisiyla bu ara surum, klinik karar destek sistemi olarak degil, tarama seviyesinde anomaly scoring yapan bir arastirma prototipi olarak degerlendirilmelidir.
+Baseline model, gorece basit olmasina ragmen normal anatomi dagilimini ogrenerek patolojik siniflarin reconstruction error degerlerini yukseltebilmektedir. Bununla birlikte reconstruction tabanli yontemlerin iyi bilinen bir siniri vardir: guclu decoder yapilari bazen anomalileri de fazla iyi yeniden uretebilir [4], [8]. Kermany veri kumesi image-level etiketler icerir; bu nedenle lokal lesion segmentasyonu icin dogrudan pixel-level ground truth bulunmamaktadir. Ayrica threshold seciminin precision-recall dengesi uzerinde guclu etkisi vardir. Bu nedenle tek bir metrik yerine percentile bazli karsilastirma tablosu korunmustur.
+
+Hesaplama maliyeti de goz ardi edilemez. Egitim kosusu yerel ortamda uzun sayilabilecek bir surede tamamlanmistir ve bu durum veri yukleme ile on isleme hattinin da iyilestirme alani oldugunu gostermektedir. Dolayisiyla mevcut sistem klinik kullanimdan ziyade arastirma ve erken tarama mantiginda degerlendirilmelidir.
 
 ## 6. Gelecek Calismalar
 
-Final asamada birkac dogrudan gelistirme yolu bulunmaktadir. Ilk olarak standart autoencoder yerine VAE veya memory-augmented reconstruction modelleri denenebilir. Ikinci olarak residual map veya anomaly map kalitesi artirilabilir. Ucuncu olarak knowledge distillation tabanli retinal OCT anomaly detection yaklasimlari [7], [9] ile karsilastirma yapilabilir. Son olarak bir ablation calismasi ile image size, latent boyut ve threshold seciminin etkisi sistematik olarak incelenebilir.
+Final asamada standart autoencoder yerine VAE veya memory-augmented reconstruction modelleri denenebilir. Residual map kalitesi artirilabilir, daha yuksek giris cozunurlugu ile DRUSEN gibi zorlayici siniflarda ayristirma gucu test edilebilir ve image size, latent boyut ile threshold seciminin etkisi sistematik ablation calismalariyla incelenebilir.
 
 ## 7. Sonuc
 
-Bu ara rapor asamasinda, Kermany OCT verisi icin patient-level validation kullanan, yalnizca normal goruntulerle egitilen ve reconstruction error ile patolojik scan tespiti yapan tekrar uretilebilir bir baseline sistem kurulmustur. Kod altyapisi; veri hazirlama, egitim, degerlendirme, grafik uretimi ve ara rapor taslagi olusturma adimlarini tek akista birlestirmektedir. Final asamada hedef, bu baseline'i daha guclu anomaly detection yaklasimlariyla genisletmek ve sonuclari daha kapsamli karsilastirmali deneylerle desteklemektir.
+Bu ara rapor asamasinda, Kermany OCT verisi icin patient-level validation kullanan, yalnizca normal goruntulerle egitilen ve reconstruction error ile patolojik scan tespiti yapan tekrar uretilebilir bir baseline sistem kurulmustur. Gercek veri uzerinde elde edilen AUROC 0.9108 ve F1 0.8201 degerleri, projenin planlama asamasini gecip calisir ve savunulabilir bir noktaya geldigini gostermektedir. Final asamada hedef, bu baseline'i daha guclu anomaly detection yaklasimlariyla genisletmek ve sonuclari karsilastirmali deneylerle desteklemektir.
 
 ## Kaynaklar
 

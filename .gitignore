@@ -9,3 +9,5 @@ Thumbs.db
 venv/
 
 ~$*.docx
+data/oct2017/
+example/yata_extracted.txt

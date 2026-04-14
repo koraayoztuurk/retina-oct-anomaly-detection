@@ -1,7 +1,7 @@
 split_name,class_name,image_count,patient_count
-train,NORMAL,24,8
-val,NORMAL,6,2
-test,CNV,10,5
-test,DME,10,5
-test,DRUSEN,10,5
-test,NORMAL,10,5
+train,NORMAL,40715,2747
+val,NORMAL,10425,687
+test,CNV,250,178
+test,DME,250,167
+test,DRUSEN,250,169
+test,NORMAL,250,171
