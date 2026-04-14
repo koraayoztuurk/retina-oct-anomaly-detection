@@ -1,5 +1,5 @@
 {
-  "title_tr": "Normal Retina OCT Goruntulerinden Ogrenilen Konvolusyonel Autoencoder ile Patolojik Orneklerin Rekonstruksiyon Hatasi Tabanli Tespiti",
+  "title_tr": "Normal Retina OCT Görüntülerinden Öğrenilen Konvolüsyonel Autoencoder ile Patolojik Örneklerin Rekonstrüksiyon Hatası Tabanlı Tespiti",
   "title_en": "Reconstruction-Error-Based Detection of Pathological Retinal OCT Scans Using a Convolutional Autoencoder Trained on Normal Images",
   "metrics": {
     "threshold": 0.00135199069045484,
