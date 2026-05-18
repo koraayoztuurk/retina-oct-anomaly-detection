@@ -1,0 +1,9 @@
+{
+  "train_class_names": [
+    "NORMAL"
+  ],
+  "train_pathology_count": 0,
+  "train_val_patient_overlap_count": 0,
+  "train_val_patient_overlap_examples": [],
+  "crop_mode": "content"
+}

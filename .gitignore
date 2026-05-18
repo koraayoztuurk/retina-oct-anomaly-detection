@@ -11,3 +11,9 @@ venv/
 ~$*.docx
 data/oct2017/
 example/yata_extracted.txt
+tmp/
+outputs/experiments/*/saved_models/
+outputs/*_master.log
+outputs/*_master.err
+outputs/*_train.log
+outputs/*_train.err

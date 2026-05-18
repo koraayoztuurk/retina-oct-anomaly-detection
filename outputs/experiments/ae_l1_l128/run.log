@@ -1,0 +1,118 @@
+[INFO] PyTorch version        : 2.6.0+cu124
+[INFO] CUDA available         : True
+[INFO] CUDA device count      : 1
+[INFO] Using device           : cuda
+[INFO] GPU name              : NVIDIA GeForce RTX 4060 Laptop GPU
+[INFO] GPU memory (GB)       : 8.00
+
+[1/7] Preparing datasets
+[INFO] Dataset summary
+split_name class_name  image_count  patient_count
+     train     NORMAL        40715           2747
+       val     NORMAL        10425            687
+      test        CNV          250            178
+      test        DME          250            167
+      test     DRUSEN          250            169
+      test     NORMAL          250            171
+[INFO] Dataset checks
+[INFO] Train classes           : NORMAL
+[INFO] Train pathology count   : 0
+[INFO] Train/val patient overlap: 0
+
+[2/7] Building model
+ConvAutoencoder(
+  (encoder): Sequential(
+    (0): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): ReLU(inplace=True)
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (3): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (4): ReLU(inplace=True)
+    (5): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (6): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (7): ReLU(inplace=True)
+    (8): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (9): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (10): ReLU(inplace=True)
+    (11): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (to_latent): Linear(in_features=16384, out_features=128, bias=True)
+  (from_latent): Linear(in_features=128, out_features=16384, bias=True)
+  (decoder): Sequential(
+    (0): ConvTranspose2d(256, 128, kernel_size=(2, 2), stride=(2, 2))
+    (1): ReLU(inplace=True)
+    (2): ConvTranspose2d(128, 64, kernel_size=(2, 2), stride=(2, 2))
+    (3): ReLU(inplace=True)
+    (4): ConvTranspose2d(64, 32, kernel_size=(2, 2), stride=(2, 2))
+    (5): ReLU(inplace=True)
+    (6): ConvTranspose2d(32, 16, kernel_size=(2, 2), stride=(2, 2))
+    (7): ReLU(inplace=True)
+    (8): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): Sigmoid()
+  )
+)
+[INFO] Parameter count         : 4,773,121
+
+[3/7] Training model
+[INFO] Training ae model from scratch
+[INFO] Loss type                : l1
+Epoch 01/40 | train_loss=0.059225 | val_loss=0.033771
+Epoch 02/40 | train_loss=0.031445 | val_loss=0.029855
+Epoch 03/40 | train_loss=0.028467 | val_loss=0.027553
+Epoch 04/40 | train_loss=0.026478 | val_loss=0.025847
+Epoch 05/40 | train_loss=0.025048 | val_loss=0.024595
+Epoch 06/40 | train_loss=0.023994 | val_loss=0.025179
+Epoch 07/40 | train_loss=0.023146 | val_loss=0.023310
+Epoch 08/40 | train_loss=0.022512 | val_loss=0.023199
+Epoch 09/40 | train_loss=0.021897 | val_loss=0.022398
+Epoch 10/40 | train_loss=0.021386 | val_loss=0.021554
+Epoch 11/40 | train_loss=0.020852 | val_loss=0.021163
+Epoch 12/40 | train_loss=0.020396 | val_loss=0.020556
+Epoch 13/40 | train_loss=0.020010 | val_loss=0.020146
+Epoch 14/40 | train_loss=0.019556 | val_loss=0.019942
+Epoch 15/40 | train_loss=0.019340 | val_loss=0.019861
+Epoch 16/40 | train_loss=0.019141 | val_loss=0.019494
+Epoch 17/40 | train_loss=0.018893 | val_loss=0.019461
+Epoch 18/40 | train_loss=0.018754 | val_loss=0.019462
+Epoch 19/40 | train_loss=0.018611 | val_loss=0.019469
+Epoch 20/40 | train_loss=0.018337 | val_loss=0.018724
+Epoch 21/40 | train_loss=0.018194 | val_loss=0.018735
+Epoch 22/40 | train_loss=0.018080 | val_loss=0.018777
+Epoch 23/40 | train_loss=0.017955 | val_loss=0.018898
+Epoch 24/40 | train_loss=0.017871 | val_loss=0.018364
+Epoch 25/40 | train_loss=0.017774 | val_loss=0.018809
+Epoch 26/40 | train_loss=0.017686 | val_loss=0.018267
+Epoch 27/40 | train_loss=0.017603 | val_loss=0.018140
+Epoch 28/40 | train_loss=0.017508 | val_loss=0.018157
+Epoch 29/40 | train_loss=0.017475 | val_loss=0.018321
+Epoch 30/40 | train_loss=0.017375 | val_loss=0.017957
+Epoch 31/40 | train_loss=0.017330 | val_loss=0.017904
+Epoch 32/40 | train_loss=0.017268 | val_loss=0.017863
+Epoch 33/40 | train_loss=0.017219 | val_loss=0.017710
+Epoch 34/40 | train_loss=0.017138 | val_loss=0.017726
+Epoch 35/40 | train_loss=0.017097 | val_loss=0.017855
+Epoch 36/40 | train_loss=0.017045 | val_loss=0.017806
+Epoch 37/40 | train_loss=0.017002 | val_loss=0.017592
+Epoch 38/40 | train_loss=0.016958 | val_loss=0.017728
+Epoch 39/40 | train_loss=0.016911 | val_loss=0.017554
+Epoch 40/40 | train_loss=0.016875 | val_loss=0.017568
+[INFO] Best epoch             : 39
+[INFO] Best val loss          : 0.017554
+[INFO] Training duration      : 30m 18s
+
+[4/7] Computing validation thresholds
+
+[5/7] Evaluating on test split
+
+[6/7] Saving metrics and figures
+[INFO] Saved JSON            : outputs\experiments\ae_l1_l128\metrics\run_config.json
+[INFO] Saved JSON            : outputs\experiments\ae_l1_l128\metrics\training_history.json
+[INFO] Saved JSON            : outputs\experiments\ae_l1_l128\metrics\dataset_checks.json
+[INFO] Saved JSON            : outputs\experiments\ae_l1_l128\metrics\selected_threshold_metrics.json
+[INFO] Saved JSON            : outputs\experiments\ae_l1_l128\metrics\thresholds.json
+[INFO] Saved text            : outputs\experiments\ae_l1_l128\summary.txt
+
+[7/7] Skipping report assets
+
+[DONE] All outputs were generated successfully.
+[DONE] Outputs directory       : outputs\experiments\ae_l1_l128
+[DONE] Report directory        : outputs\experiments\ae_l1_l128\report_assets

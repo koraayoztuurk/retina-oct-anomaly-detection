@@ -1,0 +1,8 @@
+{
+  "run_id": "ae_mse_l256",
+  "threshold": 0.001276522688567637,
+  "residual_heatmap_overlay": "outputs\\experiments\\ae_mse_l256\\reconstructions\\residual_heatmap_overlay_examples.png",
+  "drusen_false_negative_figure": "outputs\\experiments\\ae_mse_l256\\reconstructions\\drusen_false_negative_examples.png",
+  "drusen_false_negative_csv": "outputs\\experiments\\ae_mse_l256\\metrics\\drusen_false_negative_examples.csv",
+  "drusen_false_negative_count": 162
+}

@@ -1,0 +1,16 @@
+{
+  "run_id": "ae_mse_l128_e60",
+  "patient_aggregation": "mean",
+  "score_mode": "topk_mse_5",
+  "threshold": 0.0116413272777572,
+  "auroc": 0.945632060098876,
+  "accuracy": 0.8488188976377953,
+  "precision": 0.96875,
+  "recall": 0.8292181069958847,
+  "f1": 0.893569844789357,
+  "fpr": 0.087248322147651,
+  "tn": 136,
+  "fp": 13,
+  "fn": 83,
+  "tp": 403
+}

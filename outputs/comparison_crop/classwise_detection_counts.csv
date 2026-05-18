@@ -1,0 +1,5 @@
+run_id,class_name,sample_count,patient_count,mean_reconstruction_error,std_reconstruction_error,detected_count,detection_rate
+ae_mse_l256_bs16_crop,CNV,250,178,0.0029103297116234,0.0009784504292482,228,0.912
+ae_mse_l256_bs16_crop,DME,250,167,0.0024661306457128,0.0012868397699763,183,0.732
+ae_mse_l256_bs16_crop,DRUSEN,250,169,0.0016151623236946,0.0007818675026857,91,0.364
+ae_mse_l256_bs16_crop,NORMAL,250,171,0.0010667592370882,0.0004336619055805,20,0.08

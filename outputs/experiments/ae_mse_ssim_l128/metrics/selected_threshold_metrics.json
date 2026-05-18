@@ -1,0 +1,18 @@
+{
+  "threshold": 0.04795764982700347,
+  "auroc": 0.7856906666666668,
+  "accuracy": 0.617,
+  "precision": 0.919908466819222,
+  "recall": 0.536,
+  "f1": 0.6773378264532435,
+  "fpr": 0.14,
+  "tn": 215,
+  "fp": 35,
+  "fn": 348,
+  "tp": 402,
+  "run_id": "ae_mse_ssim_l128",
+  "model_type": "ae",
+  "loss_type": "mse_ssim",
+  "score_type": "mse_ssim",
+  "default_percentile": 95
+}

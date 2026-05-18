@@ -14,17 +14,23 @@ import torch
 CONFIG: dict[str, Any] = {
     "data_root": os.path.join("data", "oct2017"),
     "output_dir": "outputs",
+    "output_root": None,
     "report_dir": "report",
     "report_template": "IEEE_Turkey_TUAC_Template_TR_2016_Final.docx",
+    "run_id": None,
+    "model_type": "ae",
+    "loss_type": "mse",
+    "beta": 1e-4,
     "seed": 42,
     "image_size": 128,
+    "crop_mode": "none",
     "val_ratio": 0.2,
     "batch_size": 32,
     "learning_rate": 1e-3,
     "epochs": 40,
     "early_stopping_patience": 8,
     "latent_dim": 128,
-    "num_workers": 0,
+    "num_workers": 4,
     "threshold_percentiles": [95, 97, 99],
     "default_percentile": 95,
     "train_split_name": "train",
@@ -66,8 +72,14 @@ def get_device() -> torch.device:
 
 
 def prepare_output_dirs(config: dict[str, Any], clean: bool = True) -> dict[str, Path]:
-    output_root = Path(config["output_dir"])
-    report_root = Path(config["report_dir"])
+    if config.get("output_root"):
+        output_root = Path(config["output_root"])
+    elif config.get("run_id"):
+        output_root = Path(config["output_dir"]) / "experiments" / str(config["run_id"])
+    else:
+        output_root = Path(config["output_dir"])
+
+    report_root = output_root / "report_assets" if config.get("run_id") else Path(config["report_dir"])
     directories = {
         "output_root": output_root,
         "figures": output_root / "figures",

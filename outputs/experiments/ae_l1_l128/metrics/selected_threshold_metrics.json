@@ -1,0 +1,18 @@
+{
+  "threshold": 0.02475187741219997,
+  "auroc": 0.8459306666666666,
+  "accuracy": 0.699,
+  "precision": 0.9535353535353536,
+  "recall": 0.6293333333333333,
+  "f1": 0.7582329317269076,
+  "fpr": 0.092,
+  "tn": 227,
+  "fp": 23,
+  "fn": 278,
+  "tp": 472,
+  "run_id": "ae_l1_l128",
+  "model_type": "ae",
+  "loss_type": "l1",
+  "score_type": "l1",
+  "default_percentile": 95
+}

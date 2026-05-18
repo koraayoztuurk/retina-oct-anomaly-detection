@@ -1,0 +1,18 @@
+{
+  "threshold": 0.004214350972324609,
+  "auroc": 0.8757866666666666,
+  "accuracy": 0.692,
+  "precision": 0.9702127659574468,
+  "recall": 0.608,
+  "f1": 0.7475409836065574,
+  "fpr": 0.056,
+  "tn": 236,
+  "fp": 14,
+  "fn": 294,
+  "tp": 456,
+  "run_id": "vae_msekl_l128",
+  "model_type": "vae",
+  "loss_type": "vae_mse_kl",
+  "score_type": "mse",
+  "default_percentile": 95
+}

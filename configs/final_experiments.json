@@ -1,0 +1,52 @@
+{
+  "defaults": {
+    "data_root": "data/oct2017",
+    "epochs": 40,
+    "early_stopping_patience": 8,
+    "batch_size": 32,
+    "image_size": 128,
+    "learning_rate": 0.001,
+    "num_workers": 4,
+    "default_percentile": 95,
+    "threshold_percentiles": [95, 97, 99],
+    "beta": 0.0001
+  },
+  "experiments": [
+    {
+      "run_id": "ae_mse_l128",
+      "model_type": "ae",
+      "loss_type": "mse",
+      "latent_dim": 128
+    },
+    {
+      "run_id": "vae_msekl_l128",
+      "model_type": "vae",
+      "loss_type": "vae_mse_kl",
+      "latent_dim": 128
+    },
+    {
+      "run_id": "ae_l1_l128",
+      "model_type": "ae",
+      "loss_type": "l1",
+      "latent_dim": 128
+    },
+    {
+      "run_id": "ae_mse_ssim_l128",
+      "model_type": "ae",
+      "loss_type": "mse_ssim",
+      "latent_dim": 128
+    },
+    {
+      "run_id": "ae_mse_l64",
+      "model_type": "ae",
+      "loss_type": "mse",
+      "latent_dim": 64
+    },
+    {
+      "run_id": "ae_mse_l256",
+      "model_type": "ae",
+      "loss_type": "mse",
+      "latent_dim": 256
+    }
+  ]
+}

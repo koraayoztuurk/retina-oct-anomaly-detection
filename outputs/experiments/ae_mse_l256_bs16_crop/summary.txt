@@ -1,0 +1,49 @@
+Retina OCT anomaly detection experiment summary
+===============================================
+
+Configuration
+  run_id             : ae_mse_l256_bs16_crop
+  model_type         : ae
+  loss_type          : mse
+  data_root          : data/oct2017
+  image_size         : 128
+  crop_mode          : content
+  batch_size         : 16
+  latent_dim         : 256
+  num_workers        : 4
+  default_percentile : p95
+
+Dataset summary
+split_name class_name  image_count  patient_count
+     train     NORMAL        40715           2747
+       val     NORMAL        10425            687
+      test        CNV          250            178
+      test        DME          250            167
+      test     DRUSEN          250            169
+      test     NORMAL          250            171
+
+Training summary
+  best_epoch         : 38
+  best_val_loss      : 0.000894
+  training_time_sec  : 3383.19
+
+Thresholds
+  p95: 0.001689
+  p97: 0.001901
+  p99: 0.002418
+
+Selected-threshold metrics
+  AUROC              : 0.8767
+  Accuracy           : 0.7320
+  Precision          : 0.9617
+  Recall             : 0.6693
+  F1                 : 0.7893
+  FPR                : 0.0800
+  Confusion          : TN=230 FP=20 FN=248 TP=502
+
+Class-wise reconstruction summary
+class_name  sample_count  patient_count  mean_reconstruction_error  std_reconstruction_error  detected_count  detection_rate
+       CNV           250            178                   0.002910                  0.000978             228           0.912
+       DME           250            167                   0.002466                  0.001287             183           0.732
+    DRUSEN           250            169                   0.001615                  0.000782              91           0.364
+    NORMAL           250            171                   0.001067                  0.000434              20           0.080

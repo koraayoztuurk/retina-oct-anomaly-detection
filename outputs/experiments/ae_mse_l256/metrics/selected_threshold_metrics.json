@@ -1,0 +1,18 @@
+{
+  "threshold": 0.001276522688567637,
+  "auroc": 0.9092693333333333,
+  "accuracy": 0.776,
+  "precision": 0.9781818181818182,
+  "recall": 0.7173333333333334,
+  "f1": 0.8276923076923077,
+  "fpr": 0.048,
+  "tn": 238,
+  "fp": 12,
+  "fn": 212,
+  "tp": 538,
+  "run_id": "ae_mse_l256",
+  "model_type": "ae",
+  "loss_type": "mse",
+  "score_type": "mse",
+  "default_percentile": 95
+}

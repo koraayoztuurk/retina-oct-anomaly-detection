@@ -1,0 +1,30 @@
+{
+  "defaults": {
+    "data_root": "data/oct2017",
+    "epochs": 40,
+    "early_stopping_patience": 8,
+    "image_size": 128,
+    "learning_rate": 0.001,
+    "num_workers": 4,
+    "default_percentile": 95,
+    "threshold_percentiles": [95, 97, 99],
+    "beta": 0.0001,
+    "model_type": "ae",
+    "loss_type": "mse",
+    "latent_dim": 256
+  },
+  "experiments": [
+    {
+      "run_id": "ae_mse_l256",
+      "batch_size": 32
+    },
+    {
+      "run_id": "ae_mse_l256_bs16",
+      "batch_size": 16
+    },
+    {
+      "run_id": "ae_mse_l256_bs64",
+      "batch_size": 64
+    }
+  ]
+}

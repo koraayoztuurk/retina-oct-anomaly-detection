@@ -1,0 +1,5 @@
+run_id,crop_mode,batch_size,class_name,sample_count,patient_count,mean_reconstruction_error,std_reconstruction_error,detected_count,detection_rate
+ae_mse_l256_bs32_retina_margin,retina_margin,32,CNV,250,178,0.0028854125328361,0.001105687214635,235,0.94
+ae_mse_l256_bs32_retina_margin,retina_margin,32,DME,250,167,0.0024044615933671,0.0013721014404712,190,0.76
+ae_mse_l256_bs32_retina_margin,retina_margin,32,DRUSEN,250,169,0.0014665392248425,0.0007031798240495,96,0.384
+ae_mse_l256_bs32_retina_margin,retina_margin,32,NORMAL,250,171,0.0009615350996609,0.0004011812069096,20,0.08
