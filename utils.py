@@ -15,8 +15,6 @@ CONFIG: dict[str, Any] = {
     "data_root": os.path.join("data", "oct2017"),
     "output_dir": "outputs",
     "output_root": None,
-    "report_dir": "report",
-    "report_template": "IEEE_Turkey_TUAC_Template_TR_2016_Final.docx",
     "run_id": None,
     "model_type": "ae",
     "use_batch_norm": False,
@@ -115,14 +113,12 @@ def prepare_output_dirs(config: dict[str, Any], clean: bool = True) -> dict[str,
     else:
         output_root = Path(config["output_dir"])
 
-    report_root = output_root / "report_assets" if config.get("run_id") else Path(config["report_dir"])
     directories = {
         "output_root": output_root,
         "figures": output_root / "figures",
         "metrics": output_root / "metrics",
         "reconstructions": output_root / "reconstructions",
         "saved_models": output_root / "saved_models",
-        "report_root": report_root,
     }
 
     if clean and output_root.exists():

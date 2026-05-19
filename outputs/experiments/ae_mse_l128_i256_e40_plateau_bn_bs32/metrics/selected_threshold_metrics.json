@@ -1,0 +1,18 @@
+{
+  "threshold": 0.0023821683600544928,
+  "auroc": 0.861872,
+  "accuracy": 0.695,
+  "precision": 0.9550102249488752,
+  "recall": 0.6226666666666667,
+  "f1": 0.7538337368845843,
+  "fpr": 0.088,
+  "tn": 228,
+  "fp": 22,
+  "fn": 283,
+  "tp": 467,
+  "run_id": "ae_mse_l128_i256_e40_plateau_bn_bs32",
+  "model_type": "ae",
+  "loss_type": "mse",
+  "score_type": "mse",
+  "default_percentile": 95
+}

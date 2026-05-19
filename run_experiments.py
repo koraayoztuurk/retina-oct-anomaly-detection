@@ -53,7 +53,6 @@ def build_command(experiment: dict[str, Any], clean_outputs: bool) -> list[str]:
         "main.py",
         "--run-id",
         str(experiment["run_id"]),
-        "--skip-report",
     ]
     if clean_outputs:
         command.append("--clean-outputs")

@@ -1,0 +1,5 @@
+run_id,crop_mode,batch_size,class_name,sample_count,patient_count,mean_reconstruction_error,std_reconstruction_error,detected_count,detection_rate
+ae_mse_l128_i256_e40_plateau_bn_bs32,none,32,CNV,250,178,0.0039097647946327,0.0015417172959517,224,0.896
+ae_mse_l128_i256_e40_plateau_bn_bs32,none,32,DME,250,167,0.0033372982949949,0.0017575388935111,175,0.7
+ae_mse_l128_i256_e40_plateau_bn_bs32,none,32,DRUSEN,250,169,0.0022141717763151,0.0009758548530911,68,0.272
+ae_mse_l128_i256_e40_plateau_bn_bs32,none,32,NORMAL,250,171,0.0016119851833209,0.0006644699844657,22,0.088

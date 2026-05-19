@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import argparse
-from pathlib import Path
 
 from data_utils import prepare_datasets
 from evaluate import (
@@ -30,7 +29,6 @@ from utils import clone_config, count_parameters, get_device, prepare_output_dir
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Retina OCT anomaly detection with a convolutional autoencoder.")
     parser.add_argument("--data-root", default=None, help="Dataset root. Expected structure: data/oct2017/{train,test}/{NORMAL,CNV,DME,DRUSEN}")
-    parser.add_argument("--report-template", default=None, help="Path to the IEEE DOCX template.")
     parser.add_argument("--run-id", default=None, help="Experiment id. Outputs are stored under outputs/experiments/<run-id>.")
     parser.add_argument("--model-type", choices=["ae", "vae"], default=None)
     parser.add_argument("--use-batch-norm", action="store_true", default=None)
@@ -52,7 +50,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--default-percentile", type=int, default=None)
     parser.add_argument("--threshold-percentiles", type=int, nargs="+", default=None)
     parser.add_argument("--clean-outputs", action="store_true", help="Delete this run output folder before running.")
-    parser.add_argument("--skip-report", action="store_true", help="Skip ara-report asset generation for experiment runs.")
     return parser.parse_args()
 
 
@@ -60,7 +57,6 @@ def apply_cli_overrides(config: dict, args: argparse.Namespace) -> dict:
     override_fields = {
         "data_root": args.data_root,
         "output_root": args.output_root,
-        "report_template": args.report_template,
         "run_id": args.run_id,
         "model_type": args.model_type,
         "use_batch_norm": args.use_batch_norm,
@@ -92,6 +88,8 @@ def validate_config(config: dict) -> None:
         raise ValueError("epochs must be at least 1.")
     if config["batch_size"] < 1:
         raise ValueError("batch_size must be at least 1.")
+    if config["image_size"] < 16 or config["image_size"] % 16 != 0:
+        raise ValueError("image_size must be at least 16 and divisible by 16.")
     if config["num_workers"] < 0:
         raise ValueError("num_workers cannot be negative.")
     if config["learning_rate"] <= 0:
@@ -130,11 +128,11 @@ def main() -> None:
     device = get_device()
     directories = prepare_output_dirs(config, clean=args.clean_outputs)
 
-    print("\n[1/7] Preparing datasets")
+    print("\n[1/6] Preparing datasets")
     data = prepare_datasets(config, device)
     data["dataset_summary"].to_csv(directories["metrics"] / "dataset_summary.csv", index=False)
 
-    print("\n[2/7] Building model")
+    print("\n[2/6] Building model")
     model = build_model(
         model_type=config["model_type"],
         latent_dim=config["latent_dim"],
@@ -144,7 +142,7 @@ def main() -> None:
     print(model)
     print(f"[INFO] Parameter count         : {count_parameters(model):,}")
 
-    print("\n[3/7] Training model")
+    print("\n[3/6] Training model")
     checkpoint_path = directories["saved_models"] / "best_autoencoder.pt"
     history = train_autoencoder(
         model=model,
@@ -155,7 +153,7 @@ def main() -> None:
         checkpoint_path=checkpoint_path,
     )
 
-    print("\n[4/7] Computing validation thresholds")
+    print("\n[4/6] Computing validation thresholds")
     score_type = score_type_for_config(config)
     val_results, _ = compute_reconstruction_results(model, data["val_loader"], device, score_type=score_type)
     thresholds = compute_thresholds(
@@ -164,7 +162,7 @@ def main() -> None:
     )
     default_threshold = thresholds[config["default_percentile"]]
 
-    print("\n[5/7] Evaluating on test split")
+    print("\n[5/6] Evaluating on test split")
     test_results, example_pool = compute_reconstruction_results(model, data["test_loader"], device, score_type=score_type)
     metrics = evaluate_binary_metrics(test_results, default_threshold)
     threshold_table = build_threshold_table(test_results, thresholds)
@@ -179,7 +177,7 @@ def main() -> None:
         }
     )
 
-    print("\n[6/7] Saving metrics and figures")
+    print("\n[6/6] Saving metrics and figures")
     val_results.to_csv(directories["metrics"] / "validation_reconstruction_errors.csv", index=False)
     test_results.to_csv(directories["metrics"] / "test_reconstruction_errors.csv", index=False)
     threshold_table.to_csv(directories["metrics"] / "threshold_comparison.csv", index=False)
@@ -236,29 +234,8 @@ def main() -> None:
     )
     save_text(summary_text, directories["output_root"] / "summary.txt")
 
-    if args.skip_report:
-        print("\n[7/7] Skipping report assets")
-    else:
-        print("\n[7/7] Building report assets")
-        from report_builder import build_report_assets
-
-        report_context = build_report_assets(
-            config=config,
-            metrics=metrics,
-            thresholds=thresholds,
-            threshold_table=threshold_table,
-            classwise_df=classwise_df,
-            dataset_summary=data["dataset_summary"],
-            history=history,
-            output_root=directories["output_root"],
-            report_root=directories["report_root"],
-            template_path=Path(config["report_template"]),
-        )
-        save_json(report_context, directories["report_root"] / "report_context.json")
-
     print("\n[DONE] All outputs were generated successfully.")
     print(f"[DONE] Outputs directory       : {directories['output_root']}")
-    print(f"[DONE] Report directory        : {directories['report_root']}")
 
 
 if __name__ == "__main__":

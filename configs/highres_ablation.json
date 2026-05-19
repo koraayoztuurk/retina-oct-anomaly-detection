@@ -1,0 +1,28 @@
+{
+  "defaults": {
+    "data_root": "data/oct2017",
+    "epochs": 40,
+    "early_stopping_patience": 8,
+    "batch_size": 32,
+    "image_size": 256,
+    "learning_rate": 0.001,
+    "lr_scheduler": "plateau",
+    "lr_scheduler_factor": 0.5,
+    "lr_scheduler_patience": 3,
+    "min_learning_rate": 0.00001,
+    "num_workers": 4,
+    "default_percentile": 95,
+    "threshold_percentiles": [95, 97, 99],
+    "beta": 0.0001
+  },
+  "experiments": [
+    {
+      "run_id": "ae_mse_l128_i256_e40_plateau_bn_bs32",
+      "model_type": "ae",
+      "use_batch_norm": true,
+      "loss_type": "mse",
+      "latent_dim": 128,
+      "crop_mode": "none"
+    }
+  ]
+}

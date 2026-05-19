@@ -12,7 +12,6 @@ EXPERIMENTS_ROOT = PROJECT_ROOT / "outputs" / "experiments"
 SCORE_ROOT = PROJECT_ROOT / "outputs" / "score_ablation"
 PREPROCESSING_ROOT = PROJECT_ROOT / "outputs" / "preprocessing"
 OUTPUTS_ROOT = PROJECT_ROOT / "outputs"
-REPORT_ROOT = PROJECT_ROOT / "report"
 
 
 RUN_NOTES = {
@@ -29,6 +28,7 @@ RUN_NOTES = {
     "ae_mse_l256_bs64": "Batch size 64 denemesi; batch size 16/32'ye göre daha zayıf.",
     "ae_mse_l256_bs16_crop": "Content crop denemesi; DRUSEN biraz artsa da genel performans düşük.",
     "ae_mse_l256_bs32_retina_margin": "Retina margin crop denemesi; DRUSEN yakalama arttı ancak FPR ve genel metrikler zayıfladı.",
+    "ae_mse_l128_i256_e40_plateau_bn_bs32": "256x256 yüksek çözünürlük denemesi; dinamik model boyutu çalıştı ancak top-k sonuçları 128 final adayının gerisinde kaldı.",
 }
 
 
@@ -360,14 +360,10 @@ def main() -> None:
         ledger_df = ledger_df.sort_values(["_category_order", "run_id"]).drop(columns=["_category_order"])
 
     OUTPUTS_ROOT.mkdir(parents=True, exist_ok=True)
-    REPORT_ROOT.mkdir(parents=True, exist_ok=True)
     csv_path = OUTPUTS_ROOT / "experiment_ledger.csv"
-    md_path = REPORT_ROOT / "experiment_ledger.md"
     ledger_df.to_csv(csv_path, index=False)
-    md_path.write_text(build_markdown(ledger_df), encoding="utf-8")
 
     print(f"[INFO] Saved CSV ledger : {csv_path}")
-    print(f"[INFO] Saved MD ledger  : {md_path}")
     print(f"[INFO] Ledger rows      : {len(ledger_df)}")
 
 

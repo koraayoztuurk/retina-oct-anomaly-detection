@@ -3,10 +3,10 @@
 This repository implements the final-stage pipeline for the course project:
 
 - train a convolutional autoencoder only on `NORMAL` retinal OCT scans,
-- compare AE, VAE, L1, MSE+SSIM, latent-size, batch-size, crop/preprocessing, extended-epoch, learning-rate-scheduler, and BatchNorm ablation runs,
+- compare AE, VAE, L1, MSE+SSIM, latent-size, batch-size, crop/preprocessing, extended-epoch, learning-rate-scheduler, BatchNorm, and 256x256 high-resolution ablation runs,
 - estimate anomaly thresholds from validation reconstruction errors,
 - detect pathological scans (`CNV`, `DME`, `DRUSEN`) through reconstruction-based anomaly scores,
-- export figures, metrics, comparison tables, patient-level analysis, bootstrap confidence intervals, explainability grids, and report assets.
+- export figures, metrics, comparison tables, patient-level analysis, bootstrap confidence intervals, and explainability grids.
 
 ## Current final technical candidate
 
@@ -23,7 +23,7 @@ This uses a convolutional autoencoder trained only on normal OCT images for 60 e
 | Image-level | `ae_mse_l128_e60_plateau_bn + topk_mse_5` | 0.9487 | 0.8593 | 0.7613 | 0.9862 | 0.0320 |
 | Patient-level | `ae_mse_l128_e60_plateau_bn + mean(topk_mse_5)` | 0.9513 | 0.9089 | 0.8541 | 0.9712 | 0.0760 |
 
-Important: the project intentionally keeps weaker trials too. VAE, L1 loss, MSE+SSIM loss, crop variants, latent-size ablation, batch-size ablation, fixed-LR extended training, learning-rate scheduling, BatchNorm, and score ensembles are all preserved so the final report can discuss what was tried and what did not improve the baseline.
+Important: the project intentionally keeps weaker trials too. VAE, L1 loss, MSE+SSIM loss, crop variants, latent-size ablation, batch-size ablation, fixed-LR extended training, learning-rate scheduling, BatchNorm, 256x256 high-resolution training, and score ensembles are all preserved so the final report can discuss what was tried and what did not improve the baseline.
 
 ## Expected dataset layout
 
@@ -63,7 +63,7 @@ Install dependencies if needed:
 ## Run a single experiment
 
 ```powershell
-..\odev2\.venv\Scripts\python.exe main.py --run-id ae_mse_l128 --model-type ae --loss-type mse --latent-dim 128 --skip-report
+..\odev2\.venv\Scripts\python.exe main.py --run-id ae_mse_l128 --model-type ae --loss-type mse --latent-dim 128
 ```
 
 Optional overrides:
@@ -108,6 +108,12 @@ Run the BatchNorm candidate:
 ..\odev2\.venv\Scripts\python.exe run_experiments.py --config configs/batchnorm_ablation.json --clean-outputs --write-logs --aggregate-config-only --comparison-root outputs/comparison_batchnorm
 ```
 
+Run the 256x256 high-resolution ablation:
+
+```powershell
+..\odev2\.venv\Scripts\python.exe run_experiments.py --config configs/highres_ablation.json --clean-outputs --write-logs --aggregate-config-only --comparison-root outputs/comparison_highres
+```
+
 Evaluate alternative anomaly scores for a completed checkpoint without retraining:
 
 ```powershell
@@ -125,7 +131,7 @@ Build the technical experiment ledger used as a final-report checklist:
 ..\odev2\.venv\Scripts\python.exe scripts/build_experiment_ledger.py
 ```
 
-This writes `outputs/experiment_ledger.csv` and `report/experiment_ledger.md`. The ledger intentionally includes both successful and unsuccessful trials so the final report can mention every attempted direction: AE/VAE, L1, MSE+SSIM, latent-size ablation, batch-size ablation, crop/preprocessing trials, learning-rate scheduling, BatchNorm, score ablation, patient-level evaluation, bootstrap confidence intervals, and explainability outputs.
+This writes `outputs/experiment_ledger.csv`. The ledger intentionally includes both successful and unsuccessful trials so the final report can mention every attempted direction: AE/VAE, L1, MSE+SSIM, latent-size ablation, batch-size ablation, crop/preprocessing trials, learning-rate scheduling, BatchNorm, 256x256 high-resolution training, score ablation, patient-level evaluation, bootstrap confidence intervals, and explainability outputs.
 
 ## Smoke test without the real dataset
 
@@ -138,8 +144,8 @@ Generate a small synthetic dataset:
 Then run:
 
 ```powershell
-..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_ae --model-type ae --loss-type mse --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_ae --skip-report --clean-outputs
-..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_vae --model-type vae --loss-type vae_mse_kl --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_vae --skip-report --clean-outputs
+..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_ae --model-type ae --loss-type mse --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_ae --clean-outputs
+..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_vae --model-type vae --loss-type vae_mse_kl --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_vae --clean-outputs
 ```
 
 Run the lightweight unit checks:
@@ -161,8 +167,6 @@ Run the lightweight unit checks:
 
 `report/` contains:
 
-- `ara_rapor_draft.md`: markdown draft for the IEEE ara rapor
-- `ara_rapor_draft.docx`: a DOCX draft built from the IEEE template when the template is available
-- `literature_notes.md`: literature pool and positioning notes
-- `report_context.json`: structured experiment data used to generate the report draft
-- `experiment_ledger.md`: final technical experiment checklist, including both successful and unsuccessful trials
+- `Grup12_KorayÖztürk_EmirAlpİlhan.pdf`: submitted ara rapor
+- `Grup12_KorayÖztürk_EmirAlpİlhan_Final_Rapor.pdf`: submitted final report
+- `Grup12_KorayÖztürk_EmirAlpİlhan_Final_Rapor.docx`: editable final report

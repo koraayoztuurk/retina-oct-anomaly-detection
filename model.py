@@ -41,18 +41,28 @@ def _build_decoder(use_batch_norm: bool = False) -> nn.Sequential:
     return nn.Sequential(*layers)
 
 
+def _encoded_spatial_size(image_size: int, downsample_factor: int = 16) -> int:
+    if image_size < downsample_factor:
+        raise ValueError(f"image_size must be at least {downsample_factor}.")
+    if image_size % downsample_factor != 0:
+        raise ValueError(f"image_size must be divisible by {downsample_factor}.")
+    return image_size // downsample_factor
+
+
 class ConvAutoencoder(nn.Module):
     def __init__(self, latent_dim: int = 128, image_size: int = 128, use_batch_norm: bool = False):
         super().__init__()
-        if image_size != 128:
-            raise ValueError("This baseline architecture expects 128x128 images.")
+        encoded_size = _encoded_spatial_size(image_size)
 
         self.model_type = "ae"
         self.latent_dim = latent_dim
+        self.image_size = image_size
+        self.encoded_size = encoded_size
         self.use_batch_norm = use_batch_norm
         self.encoder = _build_encoder(use_batch_norm=use_batch_norm)
-        self.to_latent = nn.Linear(256 * 8 * 8, latent_dim)
-        self.from_latent = nn.Linear(latent_dim, 256 * 8 * 8)
+        encoded_features = 256 * encoded_size * encoded_size
+        self.to_latent = nn.Linear(encoded_features, latent_dim)
+        self.from_latent = nn.Linear(latent_dim, encoded_features)
         self.decoder = _build_decoder(use_batch_norm=use_batch_norm)
 
     def encode(self, inputs: torch.Tensor) -> torch.Tensor:
@@ -60,7 +70,7 @@ class ConvAutoencoder(nn.Module):
         return self.to_latent(features.flatten(start_dim=1))
 
     def decode(self, latent: torch.Tensor) -> torch.Tensor:
-        decoded = self.from_latent(latent).view(-1, 256, 8, 8)
+        decoded = self.from_latent(latent).view(-1, 256, self.encoded_size, self.encoded_size)
         return self.decoder(decoded)
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
@@ -70,16 +80,18 @@ class ConvAutoencoder(nn.Module):
 class ConvVariationalAutoencoder(nn.Module):
     def __init__(self, latent_dim: int = 128, image_size: int = 128, use_batch_norm: bool = False):
         super().__init__()
-        if image_size != 128:
-            raise ValueError("This VAE architecture expects 128x128 images.")
+        encoded_size = _encoded_spatial_size(image_size)
 
         self.model_type = "vae"
         self.latent_dim = latent_dim
+        self.image_size = image_size
+        self.encoded_size = encoded_size
         self.use_batch_norm = use_batch_norm
         self.encoder = _build_encoder(use_batch_norm=use_batch_norm)
-        self.to_mu = nn.Linear(256 * 8 * 8, latent_dim)
-        self.to_logvar = nn.Linear(256 * 8 * 8, latent_dim)
-        self.from_latent = nn.Linear(latent_dim, 256 * 8 * 8)
+        encoded_features = 256 * encoded_size * encoded_size
+        self.to_mu = nn.Linear(encoded_features, latent_dim)
+        self.to_logvar = nn.Linear(encoded_features, latent_dim)
+        self.from_latent = nn.Linear(latent_dim, encoded_features)
         self.decoder = _build_decoder(use_batch_norm=use_batch_norm)
 
     def encode(self, inputs: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
@@ -94,7 +106,7 @@ class ConvVariationalAutoencoder(nn.Module):
         return mu + epsilon * std
 
     def decode(self, latent: torch.Tensor) -> torch.Tensor:
-        decoded = self.from_latent(latent).view(-1, 256, 8, 8)
+        decoded = self.from_latent(latent).view(-1, 256, self.encoded_size, self.encoded_size)
         return self.decoder(decoded)
 
     def forward(self, inputs: torch.Tensor) -> dict[str, torch.Tensor]:
