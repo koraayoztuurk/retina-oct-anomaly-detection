@@ -23,6 +23,9 @@ REPORT_DIR = PROJECT_ROOT / "report"
 OUTPUT_DIR = PROJECT_ROOT / "outputs"
 FINAL_FIGURE_DIR = OUTPUT_DIR / "final_report"
 TEMPLATE_PATH = PROJECT_ROOT / "IEEE_Turkey_TUAC_Template_TR_2016_Final.docx"
+FINAL_RUN_ID = "ae_mse_l128_e60_plateau"
+FIXED_LR_RUN_ID = "ae_mse_l128_e60"
+FINAL_SCORE_MODE = "topk_mse_5"
 
 TITLE_TR = (
     "Normal Retina OCT Görüntülerinden Öğrenilen Konvolüsyonel Autoencoder ile "
@@ -108,7 +111,7 @@ def markdown_table(frame: pd.DataFrame) -> str:
 
 def load_report_data() -> dict:
     ledger = pd.read_csv(OUTPUT_DIR / "experiment_ledger.csv")
-    final_run = "ae_mse_l128_e60"
+    final_run = FINAL_RUN_ID
     score_root = OUTPUT_DIR / "score_ablation" / final_run
     return {
         "ledger": ledger,
@@ -151,21 +154,25 @@ def create_results_figure(data: dict, path: Path) -> None:
     ledger = data["ledger"]
     final_row = ledger[
         (ledger["category"] == "score_ablation_image_level")
-        & (ledger["run_id"] == "ae_mse_l128_e60")
-        & (ledger["score_mode"] == "topk_mse_5")
+        & (ledger["run_id"] == FINAL_RUN_ID)
+        & (ledger["score_mode"] == FINAL_SCORE_MODE)
+    ].iloc[0]
+    fixed_lr_row = ledger[
+        (ledger["category"] == "score_ablation_image_level")
+        & (ledger["run_id"] == FIXED_LR_RUN_ID)
+        & (ledger["score_mode"] == FINAL_SCORE_MODE)
     ].iloc[0]
     baseline = ledger[(ledger["category"] == "training_run") & (ledger["run_id"] == "ae_mse_l128")].iloc[0]
     vae = ledger[(ledger["category"] == "training_run") & (ledger["run_id"] == "vae_msekl_l128")].iloc[0]
-    ssim = ledger[(ledger["category"] == "training_run") & (ledger["run_id"] == "ae_mse_ssim_l128")].iloc[0]
 
     classwise = data["classwise_score"]
     classwise = classwise[classwise["score_mode"] == "topk_mse_5"].copy()
     classwise["rate"] = classwise["detected_count"] / classwise["sample_count"]
 
     fig, axes = plt.subplots(1, 2, figsize=(8.2, 3.0))
-    labels = ["AE-MSE\n40e", "VAE+KL", "MSE+SSIM", "AE top-k\n60e"]
-    aurocs = [baseline["auroc"], vae["auroc"], ssim["auroc"], final_row["auroc"]]
-    f1s = [baseline["f1"], vae["f1"], ssim["f1"], final_row["f1"]]
+    labels = ["AE-MSE\n40e", "VAE+KL", "Top-k\n60e", "Top-k\n60e+LR"]
+    aurocs = [baseline["auroc"], vae["auroc"], fixed_lr_row["auroc"], final_row["auroc"]]
+    f1s = [baseline["f1"], vae["f1"], fixed_lr_row["f1"], final_row["f1"]]
     x = range(len(labels))
     axes[0].bar([i - 0.18 for i in x], aurocs, width=0.36, label="AUROC", color="#2f6f9f")
     axes[0].bar([i + 0.18 for i in x], f1s, width=0.36, label="F1", color="#f28e2b")
@@ -203,8 +210,9 @@ def make_tables(data: dict) -> dict[str, pd.DataFrame]:
 
     main_rows = [
         ("AE-MSE 40e", row("training_run", "ae_mse_l128"), "Ara baseline; DRUSEN 88/250"),
-        ("AE-MSE 60e", row("training_run", "ae_mse_l128_e60"), "Daha düşük val loss; MSE skorunda benzer"),
-        ("AE top-k 60e", row("score_ablation_image_level", "ae_mse_l128_e60", "topk_mse_5"), "Final image-level aday; DRUSEN 95/250"),
+        ("AE-MSE 60e", row("training_run", FIXED_LR_RUN_ID), "Sabit LR; 40 epoch'a göre val loss düştü"),
+        ("AE-MSE 60e + LR", row("training_run", FINAL_RUN_ID), "ReduceLROnPlateau; raw MSE'de küçük artış"),
+        ("AE top-k 60e + LR", row("score_ablation_image_level", FINAL_RUN_ID, FINAL_SCORE_MODE), "Final aday; DRUSEN 102/250"),
         ("VAE+KL", row("training_run", "vae_msekl_l128"), "Beklenen iyileştirmeyi sağlamadı; DRUSEN 41/250"),
         ("AE-L1", row("training_run", "ae_l1_l128"), "Piksel farkı duyarlılığı düşük kaldı"),
         ("AE-MSE+SSIM", row("training_run", "ae_mse_ssim_l128"), "Bu ayarda en zayıf eğitim loss'u"),
@@ -309,7 +317,14 @@ def make_tables(data: dict) -> dict[str, pd.DataFrame]:
             {"Ayar": "Final run", "Değer": config["run_id"]},
             {"Ayar": "Giriş", "Değer": f"{config['image_size']}x{config['image_size']} gri seviye, [0,1] normalizasyon"},
             {"Ayar": "Latent / batch", "Değer": f"{config['latent_dim']} / {config['batch_size']}"},
-            {"Ayar": "Optimizer", "Değer": f"Adam, lr={config['learning_rate']}"},
+            {"Ayar": "Optimizer", "Değer": f"Adam, initial lr={config['learning_rate']}"},
+            {
+                "Ayar": "LR scheduler",
+                "Değer": (
+                    f"{config.get('lr_scheduler', 'none')}, factor={config.get('lr_scheduler_factor', '')}, "
+                    f"patience={config.get('lr_scheduler_patience', '')}, min_lr={config.get('min_learning_rate', '')}"
+                ),
+            },
             {"Ayar": "Epoch / patience", "Değer": f"{config['epochs']} / {config['early_stopping_patience']}"},
             {"Ayar": "Ana threshold", "Değer": "validation NORMAL dağılımından p95"},
             {"Ayar": "Eğitim süresi", "Değer": f"{history['training_time_sec'] / 60:.1f} dakika, best epoch {history['best_epoch']}"},
@@ -317,7 +332,7 @@ def make_tables(data: dict) -> dict[str, pd.DataFrame]:
         ]
     )
 
-    score_source = pd.read_csv(OUTPUT_DIR / "score_ablation" / "ae_mse_l128_e60" / "score_comparison.csv")
+    score_source = pd.read_csv(OUTPUT_DIR / "score_ablation" / FINAL_RUN_ID / "score_comparison.csv")
     wanted_scores = [
         "mse",
         "retina_weighted_mse",
@@ -344,7 +359,7 @@ def make_tables(data: dict) -> dict[str, pd.DataFrame]:
         ]
     )
 
-    threshold_source = pd.read_csv(OUTPUT_DIR / "score_ablation" / "ae_mse_l128_e60" / "threshold_comparison.csv")
+    threshold_source = pd.read_csv(OUTPUT_DIR / "score_ablation" / FINAL_RUN_ID / "threshold_comparison.csv")
     threshold_rows = threshold_source[threshold_source["score_mode"] == "topk_mse_5"].copy()
     threshold_table = pd.DataFrame(
         [
@@ -423,9 +438,9 @@ def build_markdown(data: dict, tables: dict[str, pd.DataFrame]) -> str:
             lines.append("")
             lines.append("![Şekil 2. Final performans ve sınıf bazlı tespit özeti.](../outputs/final_report/final_results_summary.png)")
             lines.append("")
-            lines.append("![Şekil 3. Top-k residual nitel analiz örnekleri.](../outputs/score_ablation/ae_mse_l128_e60/topk_explainability_grid.png)")
+            lines.append(f"![Şekil 3. Top-k residual nitel analiz örnekleri.](../outputs/score_ablation/{FINAL_RUN_ID}/topk_explainability_grid.png)")
             lines.append("")
-            lines.append("![Şekil 4. DRUSEN false negative örnekleri.](../outputs/score_ablation/ae_mse_l128_e60/drusen_false_negative_topk_grid.png)")
+            lines.append(f"![Şekil 4. DRUSEN false negative örnekleri.](../outputs/score_ablation/{FINAL_RUN_ID}/drusen_false_negative_topk_grid.png)")
         elif heading == "Kaynakça":
             lines.extend(REFERENCES)
         else:
@@ -464,8 +479,8 @@ def report_sections(data: dict, tables: dict[str, pd.DataFrame], gpu: str) -> di
             "konvolüsyonel autoencoder tabanlı bir anomali tespit hattı geliştirilmiştir. Kermany OCT2017/Mendeley veri kümesinde "
             "eğitim aşamasına sadece NORMAL sınıfı alınmış, doğrulama bölmesi hasta kimliği kullanılarak ayrılmış ve test aşamasında "
             "CNV, DME, DRUSEN ve NORMAL örnekleri binary anomaly detection problemi olarak değerlendirilmiştir. Final aşamasında ara "
-            "baseline korunmuş; VAE+KL, L1, MSE+SSIM, latent boyut, batch size, crop ön işleme, farklı anomaly score'lar, hasta düzeyi "
-            "birleştirme ve bootstrap güven aralığı denemeleri eklenmiştir. En iyi image-level sonuç, 60 epoch eğitilen AE-MSE modelinin "
+            "baseline korunmuş; VAE+KL, L1, MSE+SSIM, latent boyut, batch size, crop ön işleme, learning rate scheduler, farklı anomaly score'lar, hasta düzeyi "
+            "birleştirme ve bootstrap güven aralığı denemeleri eklenmiştir. En iyi image-level sonuç, ReduceLROnPlateau ile 60 epoch eğitilen AE-MSE modelinin "
             "topk_mse_5 score'u ile AUROC "
             f"{best_image['auroc']:.4f}, F1 {best_image['f1']:.4f}, precision {best_image['precision']:.4f}, recall {best_image['recall']:.4f} "
             f"ve FPR {best_image['fpr']:.4f} olarak bulunmuştur. Hasta düzeyinde mean aggregation ile F1 {best_patient['f1']:.4f} elde edilmiştir. "
@@ -475,8 +490,8 @@ def report_sections(data: dict, tables: dict[str, pd.DataFrame], gpu: str) -> di
             "This project develops a convolutional autoencoder pipeline for detecting pathological retinal OCT images by learning only from normal samples. "
             "Using the Kermany OCT2017/Mendeley dataset, only NORMAL images were used for training, the validation subset was separated at patient level, "
             "and CNV, DME, DRUSEN and NORMAL test images were evaluated as a binary anomaly detection task. In the final stage, the baseline was extended with "
-            "VAE+KL, L1, MSE+SSIM, latent-size and batch-size ablations, crop preprocessing trials, alternative anomaly scores, patient-level aggregation and bootstrap confidence intervals. "
-            f"The best image-level setting was the 60-epoch AE-MSE model with topk_mse_5 scoring, reaching AUROC {best_image['auroc']:.4f}, F1 {best_image['f1']:.4f}, "
+            "VAE+KL, L1, MSE+SSIM, latent-size and batch-size ablations, crop preprocessing trials, learning-rate scheduling, alternative anomaly scores, patient-level aggregation and bootstrap confidence intervals. "
+            f"The best image-level setting was the 60-epoch AE-MSE model trained with ReduceLROnPlateau and evaluated with topk_mse_5 scoring, reaching AUROC {best_image['auroc']:.4f}, F1 {best_image['f1']:.4f}, "
             f"precision {best_image['precision']:.4f}, recall {best_image['recall']:.4f} and FPR {best_image['fpr']:.4f}. Patient-level mean aggregation achieved F1 {best_patient['f1']:.4f}. "
             "The findings indicate that localized top-k residual scoring improves separability over mean MSE, while DRUSEN remains the most challenging pathology group."
         ),
@@ -490,7 +505,7 @@ def report_sections(data: dict, tables: dict[str, pd.DataFrame], gpu: str) -> di
             "normal retina anatomisini öğrenen bir modelin patolojik görüntülerde daha yüksek rekonstrüksiyon hatası üretmesi fikri incelenmiştir."
             "\n\n"
             "Ara rapor aşamasında çalışan bir AE-MSE baseline kurulmuştu. Final aşamasında amaç sadece tek bir sonucu iyileştirmek değil, aynı zamanda hangi teknik kararların işe yaradığını sistematik olarak görmekti. "
-            "Bu kapsamda VAE tabanlı üretken latent model, L1 ve SSIM içeren loss seçenekleri, latent boyut ve batch size ablasyonları, boş alanları azaltmaya yönelik crop denemeleri, top-k residual score, hasta düzeyi değerlendirme, "
+            "Bu kapsamda VAE tabanlı üretken latent model, L1 ve SSIM içeren loss seçenekleri, latent boyut ve batch size ablasyonları, learning rate scheduler, boş alanları azaltmaya yönelik crop denemeleri, top-k residual score, hasta düzeyi değerlendirme, "
             "bootstrap güven aralığı ve nitel heatmap görselleri aynı deney hattına eklenmiştir. Bu nedenle final raporu ara rapordaki başlangıç fikrini temel almakla birlikte, asıl olarak finalde yapılan genişletmeleri ve bunların kontrollü karşılaştırmasını sunmaktadır. "
             "Böylece proje, yalnızca bir model çalıştırma örneği olmaktan çıkarılıp savunulabilir bir karşılaştırmalı analiz haline getirilmiştir."
         ),
@@ -508,7 +523,7 @@ def report_sections(data: dict, tables: dict[str, pd.DataFrame], gpu: str) -> di
             f"Veri seti olarak Kermany OCT2017/Mendeley V3 kullanılmıştır. Klasör sözleşmesi data/oct2017/{{train,test}}/{{NORMAL,CNV,DME,DRUSEN}} biçiminde tutulmuştur. Eğitimde {train_normal} NORMAL görüntü, doğrulamada {val_normal} NORMAL görüntü kullanılmıştır; test kümesi ise her sınıftan 250 görüntü olmak üzere toplam 1000 görüntü içermektedir. "
             "Dosya adlarındaki hasta kimliği parse edilerek train ve validation arasında hasta kesişimi engellenmiştir. Patient-level aggregation sırasında farklı sınıflardaki aynı sayısal ID'lerin karışmaması için class prefix korunmuştur; örneğin NORMAL-0101 ve CNV-0101 farklı hasta anahtarları olarak tutulmuştur. Eğitim verisine hiçbir patolojik sınıf alınmamış, eşik seçimi yalnızca validation NORMAL score dağılımından yapılmıştır. Tüm görüntüler gri seviyeye çevrilmiş, 128x128 boyutuna getirilmiş ve [0,1] aralığında normalize edilmiştir."
             "\n\n"
-            "Ana model dört bloklu konvolüsyonel autoencoder yapısındadır. Encoder, görüntüyü düşük boyutlu latent temsile indirger; decoder aynı uzaydan görüntüyü yeniden oluşturur. Ana koşuda latent_dim=128, Adam optimizer, learning rate 1e-3, batch size 32, maksimum 60 epoch ve patience 10 kullanılmıştır. Eğitim NVIDIA GeForce RTX 4060 Laptop GPU üzerinde yapılmış ve final koşu yaklaşık "
+            "Ana model dört bloklu konvolüsyonel autoencoder yapısındadır. Encoder, görüntüyü düşük boyutlu latent temsile indirger; decoder aynı uzaydan görüntüyü yeniden oluşturur. Ana koşuda latent_dim=128, Adam optimizer, initial learning rate 1e-3, ReduceLROnPlateau scheduler, batch size 32, maksimum 60 epoch ve early stopping patience 10 kullanılmıştır. Scheduler validation loss plateau olduğunda learning rate'i factor 0.5 ile düşürecek şekilde ayarlanmıştır. Eğitim NVIDIA GeForce RTX 4060 Laptop GPU üzerinde yapılmış ve final koşu yaklaşık "
             f"{training_minutes:.1f} dakika sürmüştür. VAE denemesinde encoder mu ve logvar üretmiş, reparameterization trick kullanılmış ve loss MSE + 1e-4 * KL olarak alınmıştır. SSIM denemesinde loss 0.8*MSE + 0.2*(1-SSIM), L1 denemesinde ise ortalama mutlak hata kullanılmıştır."
             "\n\n"
             "Deney tasarımında iki ayrım korunmuştur. Birincisi, training loss ve anomaly score her zaman aynı olmak zorunda değildir; örneğin model MSE ile eğitildikten sonra aynı rekonstrüksiyonlardan farklı score türleri hesaplanmıştır. İkincisi, eşik seçimi ile performans değerlendirmesi ayrılmıştır; p95 eşiği validation normal skorlarından alınmış, test verisi yalnızca bu eşik sabitlendikten sonra değerlendirilmiştir. Bu ayrım, test setine göre threshold ayarlama riskini azaltmıştır."
@@ -520,23 +535,25 @@ def report_sections(data: dict, tables: dict[str, pd.DataFrame], gpu: str) -> di
             "Ön işleme denemeleri ayrı bir karar noktası olarak ele alınmıştır. OCT görüntülerinde üst veya alt bölgede siyah/beyaz boş alanlar bulunabildiği için content crop ve retina-margin crop denenmiştir. Ancak bu kesme işlemleri bazı örneklerde retina çevresindeki bağlamı değiştirme riski taşımaktadır. Bu yüzden crop yaklaşımları doğrudan final modele alınmamış, önce önizleme görselleriyle incelenmiş, ardından yalnızca anlamlı görünen seçenekler tam eğitim koşusuna taşınmıştır. Sonuçlar, görsel olarak makul görünen crop işlemlerinin bile anomaly score dağılımını her zaman iyileştirmediğini göstermiştir."
         ),
         "Bulgular": (
-            "Tablo IV final aşamasında yapılan ana deneyleri özetlemektedir. Ara baseline olan AE-MSE 40 epoch koşusu AUROC 0.9104 ve F1 0.8262 üretmiştir. Aynı model 60 epoch eğitildiğinde validation loss düşmüş, ancak klasik ortalama MSE score'u tek başına büyük bir sıçrama sağlamamıştır. Asıl iyileşme score tasarımından gelmiştir: 60 epoch AE-MSE modelinde topk_mse_5 kullanıldığında AUROC 0.9457 ve F1 0.8464'e çıkmıştır. Bu sonuç, OCT patolojilerinin tüm görüntüye yayılmak yerine sınırlı bölgelerde yoğunlaşabildiğini ve ortalama MSE'nin bu sinyali zayıflatabildiğini göstermektedir."
+            "Tablo IV final aşamasında yapılan ana deneyleri özetlemektedir. Ara baseline olan AE-MSE 40 epoch koşusu AUROC 0.9104 ve F1 0.8262 üretmiştir. Aynı model 60 epoch eğitildiğinde validation loss düşmüş, ancak klasik ortalama MSE score'u tek başına büyük bir sıçrama sağlamamıştır. Son ek denemede ReduceLROnPlateau scheduler kullanılmış; learning rate 36. epoch'ta 1e-3'ten 5e-4'e düşmüş ve best validation loss 60. epoch'ta 0.000669 olmuştur. Scheduler ile eğitilen model ortalama MSE score'unda küçük bir iyileşme üretmiş, asıl iyileşme ise topk_mse_5 score ile gelmiştir: final koşu AUROC "
+            f"{best_image['auroc']:.4f} ve F1 {best_image['f1']:.4f} değerine ulaşmıştır. Bu sonuç, OCT patolojilerinin tüm görüntüye yayılmak yerine sınırlı bölgelerde yoğunlaşabildiğini ve ortalama MSE'nin bu sinyali zayıflatabildiğini göstermektedir."
             "\n\n"
             "VAE+KL, L1 ve MSE+SSIM denemeleri beklenen iyileştirmeyi sağlamamıştır. VAE özellikle DRUSEN sınıfında zayıf kalmış, MSE+SSIM ise bu veri ve mimari ayarında en düşük genel performansı vermiştir. Latent 64/128/256 karşılaştırmasında değerler birbirine yakın kalmış, final aday için latent 128 korunmuştur. Batch size 16 güçlü sonuç vermesine rağmen final score'da 60 epoch latent 128 koşusunu geçememiştir. Crop denemelerinde content crop ve retina-margin crop DRUSEN yakalama sayısını bir miktar artırmış, fakat AUROC ve FPR tarafında genel performansı düşürmüştür; bu nedenle final modelde crop kullanılmamıştır."
             "\n\n"
-            "Score ablation sonuçları, iyileştirmenin model mimarisinden çok hata haritasının nasıl özetlendiğiyle ilişkili olduğunu göstermiştir. Tablo V bu farkı sayısal olarak göstermektedir: topk_mse_5, ortalama MSE'ye göre AUROC değerini 0.9112'den 0.9457'ye çıkarmıştır. Retina-band ve retina-weighted MSE skorları ortalama MSE'ye yakın kalmış, L1/SSIM tabanlı ensemble score'lar ise topk_mse_5'i geçememiştir. Border crop yalnızca önizleme düzeyinde bırakılmıştır; çünkü ilk görsel inceleme bu yaklaşımın sınırlı katkı sağlayacağını göstermiştir. Content crop ve retina-margin crop ise tam eğitimle denenmiş, ancak daha yüksek DRUSEN tespitine rağmen genel ayrımı bozduğu için final seçime alınmamıştır."
+            "Score ablation sonuçları, iyileştirmenin model mimarisinden çok hata haritasının nasıl özetlendiğiyle ilişkili olduğunu göstermiştir. Tablo V bu farkı sayısal olarak göstermektedir: scheduler koşusunda topk_mse_5, ortalama MSE'ye göre AUROC değerini 0.9118'den 0.9474'e çıkarmıştır. Sabit learning rate ile 60 epoch eğitilen önceki adayda topk_mse_5 AUROC 0.9457 ve F1 0.8464 üretmişti; scheduler sonrası bu değerler sırasıyla 0.9474 ve 0.8515'e yükselmiştir. Retina-band ve retina-weighted MSE skorları ortalama MSE'ye yakın kalmış, L1/SSIM tabanlı ensemble score'lar ise topk_mse_5'i geçememiştir. Border crop yalnızca önizleme düzeyinde bırakılmıştır; çünkü ilk görsel inceleme bu yaklaşımın sınırlı katkı sağlayacağını göstermiştir. Content crop ve retina-margin crop ise tam eğitimle denenmiş, ancak daha yüksek DRUSEN tespitine rağmen genel ayrımı bozduğu için final seçime alınmamıştır."
             "\n\n"
-            "Tablo VI final image-level ve patient-level sonuçlarını bootstrap güven aralıklarıyla birlikte vermektedir. Image-level p95 eşiğinde precision 0.9911 ve FPR 0.0200 elde edilmiştir; yani normal test görüntülerinde yanlış pozitif sayısı 5/250 seviyesinde kalmıştır. Hasta düzeyinde mean aggregation "
+            "Tablo VI final image-level ve patient-level sonuçlarını bootstrap güven aralıklarıyla birlikte vermektedir. Image-level p95 eşiğinde precision "
+            f"{best_image['precision']:.4f} ve FPR {best_image['fpr']:.4f} elde edilmiştir; yani normal test görüntülerinde yanlış pozitif sayısı 8/250 seviyesinde kalmıştır. Hasta düzeyinde mean aggregation "
             f"AUROC {best_patient['auroc']:.4f}, F1 {best_patient['f1']:.4f}, recall {best_patient['recall']:.4f}, precision {best_patient['precision']:.4f} ve FPR {best_patient['fpr']:.4f} üretmiştir. "
-            "Confusion matrix düzeyinde image-level değerlendirmede TN=245, FP=5, FN=196 ve TP=554; patient-level değerlendirmede ise TN=158, FP=13, FN=85 ve TP=429 elde edilmiştir. "
-            "Tablo VII, p95-p97-p99 eşiğinin precision-recall dengesini nasıl değiştirdiğini göstermektedir. p97 ve p99 precision değerini korusa da recall belirgin biçimde düştüğü için final operasyon noktası p95 olarak bırakılmıştır. Tablo VIII, sınıf bazlı davranışı göstermektedir. CNV 247/250, DME 212/250 yakalanırken DRUSEN 95/250 seviyesinde kalmıştır. Bu durum DRUSEN'in normal anatomiden daha ince ve lokal sapmalar içermesiyle uyumludur. Üretilen heatmap ve DRUSEN false negative görselleri de modelin bazı DRUSEN örneklerinde patolojik bölgeyi yeterince yüksek score'a taşıyamadığını göstermiştir."
+            "Confusion matrix düzeyinde image-level değerlendirmede TN=242, FP=8, FN=188 ve TP=562; patient-level değerlendirmede ise TN=158, FP=13, FN=77 ve TP=437 elde edilmiştir. "
+            "Tablo VII, p95-p97-p99 eşiğinin precision-recall dengesini nasıl değiştirdiğini göstermektedir. p97 ve p99 precision değerini korusa da recall belirgin biçimde düştüğü için final operasyon noktası p95 olarak bırakılmıştır. Tablo VIII, sınıf bazlı davranışı göstermektedir. CNV 248/250, DME 212/250 yakalanırken DRUSEN 102/250 seviyesine çıkmıştır. Bu durum scheduler ve top-k score birleşiminin DRUSEN tarafında küçük bir kazanım sağladığını, ancak DRUSEN'in normal anatomiye yakın ve daha lokal sapmalar içerebildiği için halen en zor sınıf olduğunu göstermektedir. Üretilen heatmap ve DRUSEN false negative görselleri de modelin bazı DRUSEN örneklerinde patolojik bölgeyi yeterince yüksek score'a taşıyamadığını göstermiştir."
             "\n\n"
-            "60 epoch denemesi ayrıca eğitim süresi ve overfitting açısından da yorumlanmıştır. En iyi validation loss 58. epoch'ta görülmüş, bu da 40 epoch sınırının biraz erken kalabileceğini göstermiştir. Buna rağmen ortalama MSE score'u çok az değişmiştir; dolayısıyla ek epoch tek başına yeterli olmamıştır. Final iyileştirme, daha uzun eğitim ile top-k residual score'un birlikte kullanılmasından gelmiştir. Bu gözlem, rekonstrüksiyon tabanlı anomaly detection problemlerinde yalnızca loss düşüşünü izlemek yerine, score fonksiyonunun patolojik sinyali nasıl özetlediğini de ayrıca test etmek gerektiğini göstermektedir."
+            "60 epoch ve scheduler denemesi ayrıca eğitim süresi ve overfitting açısından da yorumlanmıştır. En iyi validation loss son epoch'ta görülmüş, bu da 40 epoch sınırının biraz erken kalabileceğini ve learning rate düşüşünün eğitim sonunda hâlâ fayda sağlayabildiğini göstermiştir. Bununla birlikte ortalama MSE score'u yine sınırlı değişmiştir; dolayısıyla ek epoch veya scheduler tek başına yeterli olmamıştır. Final iyileştirme, daha kontrollü learning rate takvimi ile top-k residual score'un birlikte kullanılmasından gelmiştir. Bu gözlem, rekonstrüksiyon tabanlı anomaly detection problemlerinde yalnızca loss düşüşünü izlemek yerine, score fonksiyonunun patolojik sinyali nasıl özetlediğini de ayrıca test etmek gerektiğini göstermektedir."
             "\n\n"
             "VAE sonucunun zayıf kalması da önemli bir bulgudur. VAE'nin daha düzenli bir latent uzay oluşturması beklenebilir; ancak KL terimi rekonstrüksiyonu daha pürüzsüz hale getirerek küçük ve lokal patolojik farklılıkların score'a yansımasını azaltmış olabilir. Benzer şekilde SSIM içeren loss yapısal benzerliği gözetse de, bu veri ve 128x128 çözünürlükte patoloji-normal ayrımını güçlendirmemiştir. Bu sonuçlar negatif görünse de final rapor açısından değerlidir; çünkü hangi geliştirmelerin gerçekten katkı verdiğini, hangilerinin yalnızca teorik olarak cazip kaldığını ayırmaktadır."
         ),
         "Sonuç": (
-            "Bu projede normal retina OCT görüntülerinden öğrenen konvolüsyonel autoencoder tabanlı bir anomali tespit sistemi uçtan uca geliştirilmiş ve final aşamasında kapsamlı ablasyonlarla değerlendirilmiştir. En güçlü sonuç, yeni ve daha karmaşık bir modelden değil, aynı AE-MSE modelinin lokal hataya duyarlı top-k residual score ile değerlendirilmesinden gelmiştir. "
+            "Bu projede normal retina OCT görüntülerinden öğrenen konvolüsyonel autoencoder tabanlı bir anomali tespit sistemi uçtan uca geliştirilmiş ve final aşamasında kapsamlı ablasyonlarla değerlendirilmiştir. En güçlü sonuç, yeni ve daha karmaşık bir modelden değil, aynı AE-MSE modelinin ReduceLROnPlateau ile daha kontrollü eğitilip lokal hataya duyarlı top-k residual score ile değerlendirilmesinden gelmiştir. "
             f"Final image-level sonuç AUROC {best_image['auroc']:.4f} ve F1 {best_image['f1']:.4f}, hasta düzeyi sonuç ise AUROC {best_patient['auroc']:.4f} ve F1 {best_patient['f1']:.4f}'dır."
             "\n\n"
             "Deneyler VAE, L1, MSE+SSIM, latent boyut, batch size ve crop gibi seçeneklerin bu veri ve ayarlarda her zaman iyileştirme getirmediğini göstermiştir. Özellikle crop işlemleri DRUSEN yakalamayı artırsa bile genel hata dengesini bozmuştur. Çalışmanın ana sınırlılıkları, test setinin sınıf başına 250 görüntüyle sınırlı tutulması, pixel-level lezyon anotasyonu bulunmaması ve modelin klinik karar destek sistemi olarak kullanılmaya hazır olmamasıdır. Bu nedenle geliştirilen sistem klinik tanı verme amacıyla değil, ders kapsamında değerlendirilen akademik bir anomaly detection baseline olarak ele alınmalıdır. Buna rağmen hasta bazlı split, testten bağımsız threshold seçimi, bootstrap güven aralığı ve nitel residual analizleriyle proje, final teslimi için tutarlı ve tekrar üretilebilir bir normal-only OCT anomaly detection baseline sunmaktadır."
@@ -616,7 +633,7 @@ def configure_styles(doc: Document) -> None:
     style = doc.styles["Normal"]
     style.font.name = "Times New Roman"
     style._element.rPr.rFonts.set(qn("w:eastAsia"), "Times New Roman")
-    style.font.size = Pt(9.8)
+    style.font.size = Pt(10)
     for section in doc.sections:
         section.top_margin = Inches(0.70)
         section.bottom_margin = Inches(0.70)
@@ -683,7 +700,7 @@ def add_heading(doc: Document, number: int | None, heading: str) -> None:
     run = p.add_run(text)
     run.bold = True
     run.font.name = "Times New Roman"
-    run.font.size = Pt(10.0)
+    run.font.size = Pt(11.0)
 
 
 def roman(number: int) -> str:
@@ -710,13 +727,13 @@ def add_body_text(doc: Document, text: str) -> None:
         p.paragraph_format.line_spacing = 1.0
 
 
-def add_dataframe_table(doc: Document, frame: pd.DataFrame, caption: str, font_size: float = 6.2) -> None:
+def add_dataframe_table(doc: Document, frame: pd.DataFrame, caption: str, font_size: float = 8.0) -> None:
     p = doc.add_paragraph(caption)
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_before = Pt(3)
     p.paragraph_format.space_after = Pt(2)
     for run in p.runs:
-        run.font.size = Pt(7.5)
+        run.font.size = Pt(10)
         run.bold = True
 
     table = doc.add_table(rows=1 + len(frame), cols=len(frame.columns))
@@ -768,7 +785,7 @@ def add_figure(doc: Document, path: Path, caption: str, width: float = 3.0, heig
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     p.paragraph_format.space_after = Pt(3)
     for run in p.runs:
-        run.font.size = Pt(7.3)
+        run.font.size = Pt(10)
 
 
 def add_column_break(doc: Document) -> None:
@@ -790,7 +807,7 @@ def add_references(doc: Document) -> None:
         p.paragraph_format.line_spacing = 1.0
         for run in p.runs:
             run.font.name = "Times New Roman"
-            run.font.size = Pt(7.8)
+            run.font.size = Pt(8)
 
 
 def build_docx(data: dict, tables: dict[str, pd.DataFrame], docx_path: Path) -> None:
@@ -812,33 +829,33 @@ def build_docx(data: dict, tables: dict[str, pd.DataFrame], docx_path: Path) -> 
     add_body_text(doc, sections["Giriş"])
     add_heading(doc, 2, "Literatür")
     add_body_text(doc, sections["Literatür"])
-    add_dataframe_table(doc, tables["literature"], "Tablo I. Literatürdeki ana kümeler ve bu projedeki karşılıkları.", font_size=6.2)
+    add_dataframe_table(doc, tables["literature"], "Tablo I. Literatürdeki ana kümeler ve bu projedeki karşılıkları.", font_size=8)
     add_heading(doc, 3, "Yöntem")
     add_body_text(doc, sections["Yöntem"])
-    add_dataframe_table(doc, tables["dataset"], "Tablo II. Kullanılan veri bölmeleri ve hasta sayıları.", font_size=6.5)
-    add_dataframe_table(doc, tables["setup"], "Tablo III. Final ana koşu ve eğitim ayarları.", font_size=6.5)
+    add_dataframe_table(doc, tables["dataset"], "Tablo II. Kullanılan veri bölmeleri ve hasta sayıları.", font_size=8)
+    add_dataframe_table(doc, tables["setup"], "Tablo III. Final ana koşu ve eğitim ayarları.", font_size=8)
     add_figure(doc, FINAL_FIGURE_DIR / "final_pipeline.png", "Şekil 1. Önerilen final deney hattı.", width=3.05)
 
     add_heading(doc, 4, "Bulgular")
     add_body_text(doc, sections["Bulgular"])
     add_column_break(doc)
-    add_dataframe_table(doc, tables["main"], "Tablo IV. Final aşamasında yapılan ana deneyler.", font_size=6.1)
-    add_dataframe_table(doc, tables["score"], "Tablo V. Final run için score ablation özeti.", font_size=6.2)
-    add_dataframe_table(doc, tables["final"], "Tablo VI. Final aday sonuçları ve bootstrap güven aralıkları.", font_size=6.2)
-    add_dataframe_table(doc, tables["threshold"], "Tablo VII. topk_mse_5 için eşik duyarlılığı.", font_size=6.3)
+    add_dataframe_table(doc, tables["main"], "Tablo IV. Final aşamasında yapılan ana deneyler.", font_size=8)
+    add_dataframe_table(doc, tables["score"], "Tablo V. Final run için score ablation özeti.", font_size=8)
+    add_dataframe_table(doc, tables["final"], "Tablo VI. Final aday sonuçları ve bootstrap güven aralıkları.", font_size=8)
     add_column_break(doc)
-    add_dataframe_table(doc, tables["classwise"], "Tablo VIII. Final top-k score için sınıf bazlı tespit özeti.", font_size=6.5)
+    add_dataframe_table(doc, tables["threshold"], "Tablo VII. topk_mse_5 için eşik duyarlılığı.", font_size=8)
+    add_dataframe_table(doc, tables["classwise"], "Tablo VIII. Final top-k score için sınıf bazlı tespit özeti.", font_size=8)
     add_body_text(doc, FIGURE_EXPLANATION)
     add_figure(doc, FINAL_FIGURE_DIR / "final_results_summary.png", "Şekil 2. Final performans ve sınıf bazlı tespit özeti.", width=3.05)
     add_figure(
         doc,
-        OUTPUT_DIR / "score_ablation" / "ae_mse_l128_e60" / "topk_explainability_grid.png",
+        OUTPUT_DIR / "score_ablation" / FINAL_RUN_ID / "topk_explainability_grid.png",
         "Şekil 3. Top-k residual overlay ile nitel analiz örnekleri.",
         width=3.05,
     )
     add_figure(
         doc,
-        OUTPUT_DIR / "score_ablation" / "ae_mse_l128_e60" / "drusen_false_negative_topk_grid.png",
+        OUTPUT_DIR / "score_ablation" / FINAL_RUN_ID / "drusen_false_negative_topk_grid.png",
         "Şekil 4. DRUSEN false negative örnekleri.",
         width=3.05,
     )

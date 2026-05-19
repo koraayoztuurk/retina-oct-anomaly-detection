@@ -1,0 +1,140 @@
+[INFO] PyTorch version        : 2.5.1+cu121
+[INFO] CUDA available         : True
+[INFO] CUDA device count      : 1
+[INFO] Using device           : cuda
+[INFO] GPU name              : NVIDIA GeForce RTX 4060 Laptop GPU
+[INFO] GPU memory (GB)       : 8.00
+
+[1/7] Preparing datasets
+[INFO] Dataset summary
+split_name class_name  image_count  patient_count
+     train     NORMAL        40715           2747
+       val     NORMAL        10425            687
+      test        CNV          250            178
+      test        DME          250            167
+      test     DRUSEN          250            169
+      test     NORMAL          250            171
+[INFO] Dataset checks
+[INFO] Train classes           : NORMAL
+[INFO] Train pathology count   : 0
+[INFO] Train/val patient overlap: 0
+[INFO] Crop mode               : none
+
+[2/7] Building model
+ConvAutoencoder(
+  (encoder): Sequential(
+    (0): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): ReLU(inplace=True)
+    (2): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (3): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (4): ReLU(inplace=True)
+    (5): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (6): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (7): ReLU(inplace=True)
+    (8): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (9): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (10): ReLU(inplace=True)
+    (11): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (to_latent): Linear(in_features=16384, out_features=128, bias=True)
+  (from_latent): Linear(in_features=128, out_features=16384, bias=True)
+  (decoder): Sequential(
+    (0): ConvTranspose2d(256, 128, kernel_size=(2, 2), stride=(2, 2))
+    (1): ReLU(inplace=True)
+    (2): ConvTranspose2d(128, 64, kernel_size=(2, 2), stride=(2, 2))
+    (3): ReLU(inplace=True)
+    (4): ConvTranspose2d(64, 32, kernel_size=(2, 2), stride=(2, 2))
+    (5): ReLU(inplace=True)
+    (6): ConvTranspose2d(32, 16, kernel_size=(2, 2), stride=(2, 2))
+    (7): ReLU(inplace=True)
+    (8): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): Sigmoid()
+  )
+)
+[INFO] Parameter count         : 4,773,121
+
+[3/7] Training model
+[INFO] Training ae model from scratch
+[INFO] Loss type                : mse
+[INFO] LR scheduler             : plateau
+Epoch 01/60 | train_loss=0.011630 | val_loss=0.004163 | lr=1.00e-03
+Epoch 02/60 | train_loss=0.003269 | val_loss=0.003089 | lr=1.00e-03
+Epoch 03/60 | train_loss=0.002278 | val_loss=0.002060 | lr=1.00e-03
+Epoch 04/60 | train_loss=0.001836 | val_loss=0.001742 | lr=1.00e-03
+Epoch 05/60 | train_loss=0.001602 | val_loss=0.001599 | lr=1.00e-03
+Epoch 06/60 | train_loss=0.001433 | val_loss=0.001461 | lr=1.00e-03
+Epoch 07/60 | train_loss=0.001333 | val_loss=0.001366 | lr=1.00e-03
+Epoch 08/60 | train_loss=0.001252 | val_loss=0.001364 | lr=1.00e-03
+Epoch 09/60 | train_loss=0.001160 | val_loss=0.001244 | lr=1.00e-03
+Epoch 10/60 | train_loss=0.001106 | val_loss=0.001148 | lr=1.00e-03
+Epoch 11/60 | train_loss=0.001052 | val_loss=0.001064 | lr=1.00e-03
+Epoch 12/60 | train_loss=0.001012 | val_loss=0.001113 | lr=1.00e-03
+Epoch 13/60 | train_loss=0.000975 | val_loss=0.001046 | lr=1.00e-03
+Epoch 14/60 | train_loss=0.000946 | val_loss=0.001002 | lr=1.00e-03
+Epoch 15/60 | train_loss=0.000921 | val_loss=0.000995 | lr=1.00e-03
+Epoch 16/60 | train_loss=0.000902 | val_loss=0.001103 | lr=1.00e-03
+Epoch 17/60 | train_loss=0.000872 | val_loss=0.000955 | lr=1.00e-03
+Epoch 18/60 | train_loss=0.000857 | val_loss=0.000924 | lr=1.00e-03
+Epoch 19/60 | train_loss=0.000837 | val_loss=0.000896 | lr=1.00e-03
+Epoch 20/60 | train_loss=0.000822 | val_loss=0.000916 | lr=1.00e-03
+Epoch 21/60 | train_loss=0.000808 | val_loss=0.000865 | lr=1.00e-03
+Epoch 22/60 | train_loss=0.000795 | val_loss=0.000861 | lr=1.00e-03
+Epoch 23/60 | train_loss=0.000784 | val_loss=0.000838 | lr=1.00e-03
+Epoch 24/60 | train_loss=0.000775 | val_loss=0.000834 | lr=1.00e-03
+Epoch 25/60 | train_loss=0.000755 | val_loss=0.000849 | lr=1.00e-03
+Epoch 26/60 | train_loss=0.000749 | val_loss=0.000862 | lr=1.00e-03
+Epoch 27/60 | train_loss=0.000743 | val_loss=0.000853 | lr=1.00e-03
+Epoch 28/60 | train_loss=0.000734 | val_loss=0.000819 | lr=1.00e-03
+Epoch 29/60 | train_loss=0.000726 | val_loss=0.000828 | lr=1.00e-03
+Epoch 30/60 | train_loss=0.000719 | val_loss=0.000808 | lr=1.00e-03
+Epoch 31/60 | train_loss=0.000715 | val_loss=0.000770 | lr=1.00e-03
+Epoch 32/60 | train_loss=0.000702 | val_loss=0.000765 | lr=1.00e-03
+Epoch 33/60 | train_loss=0.000699 | val_loss=0.000775 | lr=1.00e-03
+Epoch 34/60 | train_loss=0.000697 | val_loss=0.000776 | lr=1.00e-03
+Epoch 35/60 | train_loss=0.000688 | val_loss=0.000768 | lr=1.00e-03
+Epoch 36/60 | train_loss=0.000682 | val_loss=0.000775 | lr=5.00e-04 (reduced from 1.00e-03)
+Epoch 37/60 | train_loss=0.000614 | val_loss=0.000702 | lr=5.00e-04
+Epoch 38/60 | train_loss=0.000609 | val_loss=0.000702 | lr=5.00e-04
+Epoch 39/60 | train_loss=0.000608 | val_loss=0.000701 | lr=5.00e-04
+Epoch 40/60 | train_loss=0.000606 | val_loss=0.000699 | lr=5.00e-04
+Epoch 41/60 | train_loss=0.000602 | val_loss=0.000692 | lr=5.00e-04
+Epoch 42/60 | train_loss=0.000599 | val_loss=0.000705 | lr=5.00e-04
+Epoch 43/60 | train_loss=0.000597 | val_loss=0.000689 | lr=5.00e-04
+Epoch 44/60 | train_loss=0.000594 | val_loss=0.000692 | lr=5.00e-04
+Epoch 45/60 | train_loss=0.000591 | val_loss=0.000696 | lr=5.00e-04
+Epoch 46/60 | train_loss=0.000590 | val_loss=0.000691 | lr=5.00e-04
+Epoch 47/60 | train_loss=0.000587 | val_loss=0.000682 | lr=5.00e-04
+Epoch 48/60 | train_loss=0.000586 | val_loss=0.000686 | lr=5.00e-04
+Epoch 49/60 | train_loss=0.000584 | val_loss=0.000678 | lr=5.00e-04
+Epoch 50/60 | train_loss=0.000581 | val_loss=0.000677 | lr=5.00e-04
+Epoch 51/60 | train_loss=0.000579 | val_loss=0.000679 | lr=5.00e-04
+Epoch 52/60 | train_loss=0.000579 | val_loss=0.000673 | lr=5.00e-04
+Epoch 53/60 | train_loss=0.000577 | val_loss=0.000673 | lr=5.00e-04
+Epoch 54/60 | train_loss=0.000574 | val_loss=0.000675 | lr=5.00e-04
+Epoch 55/60 | train_loss=0.000574 | val_loss=0.000678 | lr=5.00e-04
+Epoch 56/60 | train_loss=0.000573 | val_loss=0.000670 | lr=5.00e-04
+Epoch 57/60 | train_loss=0.000569 | val_loss=0.000671 | lr=5.00e-04
+Epoch 58/60 | train_loss=0.000568 | val_loss=0.000674 | lr=5.00e-04
+Epoch 59/60 | train_loss=0.000568 | val_loss=0.000676 | lr=5.00e-04
+Epoch 60/60 | train_loss=0.000565 | val_loss=0.000669 | lr=5.00e-04
+[INFO] Best epoch             : 60
+[INFO] Best val loss          : 0.000669
+[INFO] Training duration      : 46m 52s
+
+[4/7] Computing validation thresholds
+
+[5/7] Evaluating on test split
+
+[6/7] Saving metrics and figures
+[INFO] Saved JSON            : outputs\experiments\ae_mse_l128_e60_plateau\metrics\run_config.json
+[INFO] Saved JSON            : outputs\experiments\ae_mse_l128_e60_plateau\metrics\training_history.json
+[INFO] Saved JSON            : outputs\experiments\ae_mse_l128_e60_plateau\metrics\dataset_checks.json
+[INFO] Saved JSON            : outputs\experiments\ae_mse_l128_e60_plateau\metrics\selected_threshold_metrics.json
+[INFO] Saved JSON            : outputs\experiments\ae_mse_l128_e60_plateau\metrics\thresholds.json
+[INFO] Saved text            : outputs\experiments\ae_mse_l128_e60_plateau\summary.txt
+
+[7/7] Skipping report assets
+
+[DONE] All outputs were generated successfully.
+[DONE] Outputs directory       : outputs\experiments\ae_mse_l128_e60_plateau
+[DONE] Report directory        : outputs\experiments\ae_mse_l128_e60_plateau\report_assets

@@ -43,6 +43,10 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--crop-mode", choices=["none", "content", "border", "retina_margin"], default=None)
     parser.add_argument("--latent-dim", type=int, default=None)
     parser.add_argument("--learning-rate", type=float, default=None)
+    parser.add_argument("--lr-scheduler", choices=["none", "plateau"], default=None)
+    parser.add_argument("--lr-scheduler-factor", type=float, default=None)
+    parser.add_argument("--lr-scheduler-patience", type=int, default=None)
+    parser.add_argument("--min-learning-rate", type=float, default=None)
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--default-percentile", type=int, default=None)
     parser.add_argument("--threshold-percentiles", type=int, nargs="+", default=None)
@@ -67,6 +71,10 @@ def apply_cli_overrides(config: dict, args: argparse.Namespace) -> dict:
         "crop_mode": args.crop_mode,
         "latent_dim": args.latent_dim,
         "learning_rate": args.learning_rate,
+        "lr_scheduler": args.lr_scheduler,
+        "lr_scheduler_factor": args.lr_scheduler_factor,
+        "lr_scheduler_patience": args.lr_scheduler_patience,
+        "min_learning_rate": args.min_learning_rate,
         "num_workers": args.num_workers,
         "default_percentile": args.default_percentile,
         "threshold_percentiles": args.threshold_percentiles,
@@ -84,6 +92,16 @@ def validate_config(config: dict) -> None:
         raise ValueError("batch_size must be at least 1.")
     if config["num_workers"] < 0:
         raise ValueError("num_workers cannot be negative.")
+    if config["learning_rate"] <= 0:
+        raise ValueError("learning_rate must be positive.")
+    if config["lr_scheduler"] not in {"none", "plateau"}:
+        raise ValueError("lr_scheduler must be one of: none, plateau.")
+    if not 0 < float(config["lr_scheduler_factor"]) < 1:
+        raise ValueError("lr_scheduler_factor must be between 0 and 1.")
+    if int(config["lr_scheduler_patience"]) < 1:
+        raise ValueError("lr_scheduler_patience must be at least 1.")
+    if float(config["min_learning_rate"]) <= 0:
+        raise ValueError("min_learning_rate must be positive.")
     if not config["threshold_percentiles"]:
         raise ValueError("threshold_percentiles cannot be empty.")
     if config["default_percentile"] not in config["threshold_percentiles"]:

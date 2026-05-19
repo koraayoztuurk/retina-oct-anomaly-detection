@@ -9,6 +9,21 @@ from losses import compute_loss
 from utils import format_duration
 
 
+def build_lr_scheduler(optimizer: torch.optim.Optimizer, config: dict):
+    scheduler_name = str(config.get("lr_scheduler", "none")).lower()
+    if scheduler_name == "none":
+        return None
+    if scheduler_name == "plateau":
+        return torch.optim.lr_scheduler.ReduceLROnPlateau(
+            optimizer,
+            mode="min",
+            factor=float(config.get("lr_scheduler_factor", 0.5)),
+            patience=int(config.get("lr_scheduler_patience", 3)),
+            min_lr=float(config.get("min_learning_rate", 1e-5)),
+        )
+    raise ValueError(f"Unsupported lr_scheduler: {scheduler_name}")
+
+
 def run_epoch(
     model: torch.nn.Module,
     loader,
@@ -48,6 +63,7 @@ def run_epoch(
 
 def train_autoencoder(model, train_loader, val_loader, device, config, checkpoint_path: Path) -> dict:
     optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
+    scheduler = build_lr_scheduler(optimizer, config)
     best_val_loss = float("inf")
     best_epoch = 0
     patience_counter = 0
@@ -57,6 +73,7 @@ def train_autoencoder(model, train_loader, val_loader, device, config, checkpoin
         "val_loss": [],
         "train_components": [],
         "val_components": [],
+        "learning_rates": [],
         "best_epoch": None,
         "best_val_loss": None,
         "training_time_sec": None,
@@ -67,6 +84,7 @@ def train_autoencoder(model, train_loader, val_loader, device, config, checkpoin
     beta = float(config["beta"])
     print(f"[INFO] Training {config['model_type']} model from scratch")
     print(f"[INFO] Loss type                : {loss_type}")
+    print(f"[INFO] LR scheduler             : {config.get('lr_scheduler', 'none')}")
 
     for epoch in range(1, config["epochs"] + 1):
         train_loss, train_components = run_epoch(
@@ -91,9 +109,20 @@ def train_autoencoder(model, train_loader, val_loader, device, config, checkpoin
         history["val_loss"].append(val_loss)
         history["train_components"].append(train_components)
         history["val_components"].append(val_components)
+
+        previous_lr = optimizer.param_groups[0]["lr"]
+        if scheduler is not None:
+            scheduler.step(val_loss)
+        current_lr = optimizer.param_groups[0]["lr"]
+        history["learning_rates"].append(current_lr)
+        lr_message = f" | lr={current_lr:.2e}"
+        if current_lr < previous_lr:
+            lr_message += f" (reduced from {previous_lr:.2e})"
+
         print(
             f"Epoch {epoch:02d}/{config['epochs']} | "
             f"train_loss={train_loss:.6f} | val_loss={val_loss:.6f}"
+            f"{lr_message}"
         )
 
         if val_loss < best_val_loss:

@@ -12,8 +12,8 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 
 ## En İyi Adaylar
 
-- Image-level final adayı: `ae_mse_l128_e60` + `topk_mse_5`; AUROC=0.9457, F1=0.8464, Recall=0.7387, Precision=0.9911, FPR=0.0200.
-- Patient-level final adayı: `ae_mse_l128_e60` + `mean` aggregation + `topk_mse_5`; AUROC=0.9485, F1=0.8975, Recall=0.8346, Precision=0.9706, FPR=0.0760.
+- Image-level final adayı: `ae_mse_l128_e60_plateau` + `topk_mse_5`; AUROC=0.9474, F1=0.8515, Recall=0.7493, Precision=0.9860, FPR=0.0320.
+- Patient-level final adayı: `ae_mse_l128_e60_plateau` + `mean` aggregation + `topk_mse_5`; AUROC=0.9516, F1=0.9066, Recall=0.8502, Precision=0.9711, FPR=0.0760.
 
 ## Rapor Checklist
 
@@ -22,6 +22,7 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 - L1 loss ve MSE+SSIM loss denemeleri anlatılacak; SSIM training loss'un zayıf kaldığı belirtilecek.
 - Latent size ablasyonu: 64/128/256 karşılaştırılacak.
 - Batch size ablasyonu: 16/32/64 karşılaştırılacak.
+- Learning rate scheduler denemesi anlatılacak: ReduceLROnPlateau sabit LR 60 epoch koşusunu küçük ama tutarlı biçimde iyileştirdi.
 - Crop/preprocessing denemeleri anlatılacak: content crop ve retina margin crop full run; border crop preview.
 - Score ablation anlatılacak: MSE, L1, SSIM score, retina-band, weighted retina, top-k residual ve ensemble skorlar.
 - Patient-level evaluation anlatılacak.
@@ -35,6 +36,7 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 | training_run | ae_l1_l128 | ae | l1 | l1 | 128 | 32 | none | 0.8459 | 0.7582 | 0.6293 | 0.9535 | 0.0920 | 66 | L1 loss denemesi; MSE baseline'a göre belirgin zayıf kaldı. |
 | training_run | ae_mse_l128 | ae | mse | mse | 128 | 32 | none | 0.9104 | 0.8262 | 0.7160 | 0.9764 | 0.0520 | 88 | Ana 40 epoch AE-MSE baseline; score ablation ile güçlü sonuç verdi ancak 60 epoch denemesi tarafından geçildi. |
 | training_run | ae_mse_l128_e60 | ae | mse | mse | 128 | 32 | none | 0.9112 | 0.8237 | 0.7133 | 0.9745 | 0.0560 | 84 | AE-MSE latent 128 için 60 epoch denemesi; validation loss ve top-k score metriklerinde 40 epoch koşusunu iyileştirdi. |
+| training_run | ae_mse_l128_e60_plateau | ae | mse | mse | 128 | 32 | none | 0.9118 | 0.8317 | 0.7280 | 0.9698 | 0.0680 | 92 | AE-MSE 60 epoch + ReduceLROnPlateau denemesi; validation loss'u düşürdü ve top-k score ile yeni en iyi final adayını verdi. |
 | training_run | ae_mse_l256 | ae | mse | mse | 256 | 32 | none | 0.9093 | 0.8277 | 0.7173 | 0.9782 | 0.0480 | 88 | Latent 256 ablasyonu; MSE skorunda güçlü, top-k skorla da stabil. |
 | training_run | ae_mse_l256_bs16 | ae | mse | mse | 256 | 16 | none | 0.9102 | 0.8273 | 0.7187 | 0.9747 | 0.0560 | 88 | Batch size 16 denemesi; MSE'de güçlü, top-k AUROC en yükseklerden biri. |
 | training_run | ae_mse_l256_bs16_crop | ae | mse | mse | 256 | 16 | content | 0.8767 | 0.7893 | 0.6693 | 0.9617 | 0.0800 | 91 | Content crop denemesi; DRUSEN biraz artsa da genel performans düşük. |
@@ -45,12 +47,14 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 | training_run | vae_msekl_l128 | vae | vae_mse_kl | mse | 128 | 32 | none | 0.8758 | 0.7475 | 0.6080 | 0.9702 | 0.0560 | 41 | VAE + KL denemesi; generative latent model beklenen iyileştirmeyi sağlamadı. |
 | score_ablation_image_level | ae_mse_l128 |  |  | topk_mse_5 |  |  |  | 0.9437 | 0.8372 | 0.7267 | 0.9873 | 0.0280 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | ae_mse_l128_e60 |  |  | topk_mse_5 |  |  |  | 0.9457 | 0.8464 | 0.7387 | 0.9911 | 0.0200 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
+| score_ablation_image_level | ae_mse_l128_e60_plateau |  |  | topk_mse_5 |  |  |  | 0.9474 | 0.8515 | 0.7493 | 0.9860 | 0.0320 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | ae_mse_l256 |  |  | topk_mse_5 |  |  |  | 0.9437 | 0.8336 | 0.7213 | 0.9872 | 0.0280 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | ae_mse_l256_bs16 |  |  | topk_mse_5 |  |  |  | 0.9454 | 0.8354 | 0.7240 | 0.9873 | 0.0280 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | ae_mse_l64 |  |  | topk_mse_5 |  |  |  | 0.9389 | 0.8311 | 0.7187 | 0.9854 | 0.0320 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | vae_msekl_l128 |  |  | topk_mse_10 |  |  |  | 0.8840 | 0.7453 | 0.6027 | 0.9762 | 0.0440 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_patient_level | ae_mse_l128 |  |  | topk_mse_5 |  |  |  | 0.9476 | 0.8973 | 0.8327 | 0.9727 | 0.0702 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
 | score_ablation_patient_level | ae_mse_l128_e60 |  |  | topk_mse_5 |  |  |  | 0.9485 | 0.8975 | 0.8346 | 0.9706 | 0.0760 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l128_e60_plateau |  |  | topk_mse_5 |  |  |  | 0.9516 | 0.9066 | 0.8502 | 0.9711 | 0.0760 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
 | score_ablation_patient_level | ae_mse_l256 |  |  | topk_mse_5 |  |  |  | 0.9477 | 0.8961 | 0.8307 | 0.9727 | 0.0702 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
 | score_ablation_patient_level | ae_mse_l256_bs16 |  |  | topk_mse_5 |  |  |  | 0.9501 | 0.8956 | 0.8346 | 0.9662 | 0.0877 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
 | score_ablation_patient_level | ae_mse_l64 |  |  | topk_mse_5 |  |  |  | 0.9421 | 0.8917 | 0.8249 | 0.9703 | 0.0760 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |

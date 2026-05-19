@@ -15,6 +15,8 @@ tmp/
 outputs/experiments/*/saved_models/
 !outputs/experiments/ae_mse_l128_e60/saved_models/
 !outputs/experiments/ae_mse_l128_e60/saved_models/best_autoencoder.pt
+!outputs/experiments/ae_mse_l128_e60_plateau/saved_models/
+!outputs/experiments/ae_mse_l128_e60_plateau/saved_models/best_autoencoder.pt
 outputs/*_master.log
 outputs/*_master.err
 outputs/*_train.log

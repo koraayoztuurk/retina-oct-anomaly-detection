@@ -18,6 +18,7 @@ REPORT_ROOT = PROJECT_ROOT / "report"
 RUN_NOTES = {
     "ae_mse_l128": "Ana 40 epoch AE-MSE baseline; score ablation ile güçlü sonuç verdi ancak 60 epoch denemesi tarafından geçildi.",
     "ae_mse_l128_e60": "AE-MSE latent 128 için 60 epoch denemesi; validation loss ve top-k score metriklerinde 40 epoch koşusunu iyileştirdi.",
+    "ae_mse_l128_e60_plateau": "AE-MSE 60 epoch + ReduceLROnPlateau denemesi; validation loss'u düşürdü ve top-k score ile yeni en iyi final adayını verdi.",
     "vae_msekl_l128": "VAE + KL denemesi; generative latent model beklenen iyileştirmeyi sağlamadı.",
     "ae_l1_l128": "L1 loss denemesi; MSE baseline'a göre belirgin zayıf kaldı.",
     "ae_mse_ssim_l128": "MSE+SSIM training loss denemesi; bu veri ve ayarda zayıf kaldı.",
@@ -286,6 +287,7 @@ def build_markdown(ledger_df: pd.DataFrame) -> str:
             "- L1 loss ve MSE+SSIM loss denemeleri anlatılacak; SSIM training loss'un zayıf kaldığı belirtilecek.",
             "- Latent size ablasyonu: 64/128/256 karşılaştırılacak.",
             "- Batch size ablasyonu: 16/32/64 karşılaştırılacak.",
+            "- Learning rate scheduler denemesi anlatılacak: ReduceLROnPlateau sabit LR 60 epoch koşusunu küçük ama tutarlı biçimde iyileştirdi.",
             "- Crop/preprocessing denemeleri anlatılacak: content crop ve retina margin crop full run; border crop preview.",
             "- Score ablation anlatılacak: MSE, L1, SSIM score, retina-band, weighted retina, top-k residual ve ensemble skorlar.",
             "- Patient-level evaluation anlatılacak.",
