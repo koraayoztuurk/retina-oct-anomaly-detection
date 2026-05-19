@@ -1,0 +1,9 @@
+{
+  "run_id": "ae_mse_l128_e60_plateau_bn",
+  "threshold": 0.0011832378804683,
+  "crop_mode": "none",
+  "residual_heatmap_overlay": "outputs\\experiments\\ae_mse_l128_e60_plateau_bn\\reconstructions\\residual_heatmap_overlay_examples.png",
+  "drusen_false_negative_figure": "outputs\\experiments\\ae_mse_l128_e60_plateau_bn\\reconstructions\\drusen_false_negative_examples.png",
+  "drusen_false_negative_csv": "outputs\\experiments\\ae_mse_l128_e60_plateau_bn\\metrics\\drusen_false_negative_examples.csv",
+  "drusen_false_negative_count": 151
+}

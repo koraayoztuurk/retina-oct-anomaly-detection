@@ -57,6 +57,7 @@ def main() -> None:
         model_type=config["model_type"],
         latent_dim=int(config["latent_dim"]),
         image_size=int(config["image_size"]),
+        use_batch_norm=bool(config.get("use_batch_norm", False)),
     ).to(device)
     model.load_state_dict(load_state_dict(checkpoint_path, device))
 
