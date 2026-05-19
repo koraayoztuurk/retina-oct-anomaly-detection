@@ -1,0 +1,158 @@
+[INFO] PyTorch version        : 2.5.1+cu121
+[INFO] CUDA available         : True
+[INFO] CUDA device count      : 1
+[INFO] Using device           : cuda
+[INFO] GPU name              : NVIDIA GeForce RTX 4060 Laptop GPU
+[INFO] GPU memory (GB)       : 8.00
+
+[1/7] Preparing datasets
+[INFO] Dataset summary
+split_name class_name  image_count  patient_count
+     train     NORMAL        40715           2747
+       val     NORMAL        10425            687
+      test        CNV          250            178
+      test        DME          250            167
+      test     DRUSEN          250            169
+      test     NORMAL          250            171
+[INFO] Dataset checks
+[INFO] Train classes           : NORMAL
+[INFO] Train pathology count   : 0
+[INFO] Train/val patient overlap: 0
+[INFO] Crop mode               : none
+
+[2/7] Building model
+ConvAutoencoder(
+  (encoder): Sequential(
+    (0): Conv2d(1, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (1): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+    (3): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (4): Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (5): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (6): ReLU(inplace=True)
+    (7): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (8): Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (9): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (10): ReLU(inplace=True)
+    (11): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+    (12): Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (13): BatchNorm2d(256, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (14): ReLU(inplace=True)
+    (15): MaxPool2d(kernel_size=2, stride=2, padding=0, dilation=1, ceil_mode=False)
+  )
+  (to_latent): Linear(in_features=16384, out_features=128, bias=True)
+  (from_latent): Linear(in_features=128, out_features=16384, bias=True)
+  (decoder): Sequential(
+    (0): ConvTranspose2d(256, 128, kernel_size=(2, 2), stride=(2, 2))
+    (1): BatchNorm2d(128, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (2): ReLU(inplace=True)
+    (3): ConvTranspose2d(128, 64, kernel_size=(2, 2), stride=(2, 2))
+    (4): BatchNorm2d(64, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (5): ReLU(inplace=True)
+    (6): ConvTranspose2d(64, 32, kernel_size=(2, 2), stride=(2, 2))
+    (7): BatchNorm2d(32, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (8): ReLU(inplace=True)
+    (9): ConvTranspose2d(32, 16, kernel_size=(2, 2), stride=(2, 2))
+    (10): BatchNorm2d(16, eps=1e-05, momentum=0.1, affine=True, track_running_stats=True)
+    (11): ReLU(inplace=True)
+    (12): Conv2d(16, 1, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
+    (13): Sigmoid()
+  )
+)
+[INFO] Parameter count         : 4,774,561
+
+[3/7] Training model
+[INFO] Training ae model from scratch
+[INFO] Loss type                : mse
+[INFO] LR scheduler             : plateau
+Epoch 01/60 | train_loss=0.007348 | val_loss=0.003288 | lr=1.00e-03
+Epoch 02/60 | train_loss=0.002642 | val_loss=0.002319 | lr=1.00e-03
+Epoch 03/60 | train_loss=0.001927 | val_loss=0.001713 | lr=1.00e-03
+Epoch 04/60 | train_loss=0.001639 | val_loss=0.001570 | lr=1.00e-03
+Epoch 05/60 | train_loss=0.001461 | val_loss=0.001327 | lr=1.00e-03
+Epoch 06/60 | train_loss=0.001334 | val_loss=0.001301 | lr=1.00e-03
+Epoch 07/60 | train_loss=0.001239 | val_loss=0.001192 | lr=1.00e-03
+Epoch 08/60 | train_loss=0.001164 | val_loss=0.001138 | lr=1.00e-03
+Epoch 09/60 | train_loss=0.001103 | val_loss=0.001068 | lr=1.00e-03
+Epoch 10/60 | train_loss=0.001046 | val_loss=0.001012 | lr=1.00e-03
+Epoch 11/60 | train_loss=0.001004 | val_loss=0.001016 | lr=1.00e-03
+Epoch 12/60 | train_loss=0.000966 | val_loss=0.001009 | lr=1.00e-03
+Epoch 13/60 | train_loss=0.000942 | val_loss=0.000998 | lr=1.00e-03
+Epoch 14/60 | train_loss=0.000909 | val_loss=0.000967 | lr=1.00e-03
+Epoch 15/60 | train_loss=0.000886 | val_loss=0.000929 | lr=1.00e-03
+Epoch 16/60 | train_loss=0.000866 | val_loss=0.000927 | lr=1.00e-03
+Epoch 17/60 | train_loss=0.000841 | val_loss=0.000915 | lr=1.00e-03
+Epoch 18/60 | train_loss=0.000822 | val_loss=0.000863 | lr=1.00e-03
+Epoch 19/60 | train_loss=0.000810 | val_loss=0.000841 | lr=1.00e-03
+Epoch 20/60 | train_loss=0.000787 | val_loss=0.000818 | lr=1.00e-03
+Epoch 21/60 | train_loss=0.000780 | val_loss=0.000812 | lr=1.00e-03
+Epoch 22/60 | train_loss=0.000762 | val_loss=0.000817 | lr=1.00e-03
+Epoch 23/60 | train_loss=0.000752 | val_loss=0.000792 | lr=1.00e-03
+Epoch 24/60 | train_loss=0.000740 | val_loss=0.000780 | lr=1.00e-03
+Epoch 25/60 | train_loss=0.000733 | val_loss=0.000774 | lr=1.00e-03
+Epoch 26/60 | train_loss=0.000727 | val_loss=0.000752 | lr=1.00e-03
+Epoch 27/60 | train_loss=0.000712 | val_loss=0.000781 | lr=1.00e-03
+Epoch 28/60 | train_loss=0.000707 | val_loss=0.000757 | lr=1.00e-03
+Epoch 29/60 | train_loss=0.000699 | val_loss=0.000738 | lr=1.00e-03
+Epoch 30/60 | train_loss=0.000691 | val_loss=0.000740 | lr=1.00e-03
+Epoch 31/60 | train_loss=0.000689 | val_loss=0.000730 | lr=1.00e-03
+Epoch 32/60 | train_loss=0.000677 | val_loss=0.000746 | lr=1.00e-03
+Epoch 33/60 | train_loss=0.000673 | val_loss=0.000746 | lr=1.00e-03
+Epoch 34/60 | train_loss=0.000669 | val_loss=0.000727 | lr=1.00e-03
+Epoch 35/60 | train_loss=0.000662 | val_loss=0.000731 | lr=1.00e-03
+Epoch 36/60 | train_loss=0.000661 | val_loss=0.000733 | lr=1.00e-03
+Epoch 37/60 | train_loss=0.000653 | val_loss=0.000724 | lr=1.00e-03
+Epoch 38/60 | train_loss=0.000648 | val_loss=0.000723 | lr=1.00e-03
+Epoch 39/60 | train_loss=0.000645 | val_loss=0.000720 | lr=1.00e-03
+Epoch 40/60 | train_loss=0.000642 | val_loss=0.000699 | lr=1.00e-03
+Epoch 41/60 | train_loss=0.000637 | val_loss=0.000709 | lr=1.00e-03
+Epoch 42/60 | train_loss=0.000631 | val_loss=0.000701 | lr=1.00e-03
+Epoch 43/60 | train_loss=0.000632 | val_loss=0.000705 | lr=1.00e-03
+Epoch 44/60 | train_loss=0.000629 | val_loss=0.000710 | lr=5.00e-04 (reduced from 1.00e-03)
+Epoch 45/60 | train_loss=0.000582 | val_loss=0.000658 | lr=5.00e-04
+Epoch 46/60 | train_loss=0.000579 | val_loss=0.000665 | lr=5.00e-04
+Epoch 47/60 | train_loss=0.000577 | val_loss=0.000657 | lr=5.00e-04
+Epoch 48/60 | train_loss=0.000575 | val_loss=0.000657 | lr=5.00e-04
+Epoch 49/60 | train_loss=0.000573 | val_loss=0.000653 | lr=5.00e-04
+Epoch 50/60 | train_loss=0.000572 | val_loss=0.000658 | lr=5.00e-04
+Epoch 51/60 | train_loss=0.000569 | val_loss=0.000651 | lr=5.00e-04
+Epoch 52/60 | train_loss=0.000570 | val_loss=0.000653 | lr=5.00e-04
+Epoch 53/60 | train_loss=0.000568 | val_loss=0.000651 | lr=5.00e-04
+Epoch 54/60 | train_loss=0.000564 | val_loss=0.000647 | lr=5.00e-04
+Epoch 55/60 | train_loss=0.000565 | val_loss=0.000649 | lr=5.00e-04
+Epoch 56/60 | train_loss=0.000563 | val_loss=0.000644 | lr=5.00e-04
+Epoch 57/60 | train_loss=0.000561 | val_loss=0.000650 | lr=5.00e-04
+Epoch 58/60 | train_loss=0.000561 | val_loss=0.000645 | lr=5.00e-04
+Epoch 59/60 | train_loss=0.000560 | val_loss=0.000644 | lr=5.00e-04
+Epoch 60/60 | train_loss=0.000558 | val_loss=0.000644 | lr=5.00e-04
+[INFO] Best epoch             : 59
+[INFO] Best val loss          : 0.000644
+[INFO] Training duration      : 1h 0m 30s
+
+[4/7] Computing validation thresholds
+
+[5/7] Evaluating on test split
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 122, in spawn_main
+    exitcode = _main(fd, parent_sentinel)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 131, in _main
+    prepare(preparation_data)
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 246, in prepare
+    _fixup_main_from_path(data['init_main_from_path'])
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\multiprocessing\spawn.py", line 297, in _fixup_main_from_path
+    main_content = runpy.run_path(main_path,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "C:\Users\koray\Masaüstü\Okul\Uretken Yapay Zekaya Giris\Uretken Proje\main.py", line 6, in <module>
+    from data_utils import prepare_datasets
+  File "C:\Users\koray\Masaüstü\Okul\Uretken Yapay Zekaya Giris\Uretken Proje\data_utils.py", line 10, in <module>
+    import torch
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\__init__.py", line 262, in <module>
+    _load_dll_libraries()
+  File "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\__init__.py", line 245, in _load_dll_libraries
+    raise err
+OSError: [WinError 1455] Bu iþlemin tamamlanmasý için disk belleði dosyasý çok küçük. Error loading "C:\Users\koray\AppData\Local\Programs\Python\Python312\Lib\site-packages\torch\lib\cublas64_12.dll" or one of its dependencies.

@@ -3,7 +3,7 @@
 This repository implements the final-stage pipeline for the course project:
 
 - train a convolutional autoencoder only on `NORMAL` retinal OCT scans,
-- compare AE, VAE, L1, MSE+SSIM, latent-size, batch-size, crop/preprocessing, extended-epoch, and learning-rate-scheduler ablation runs,
+- compare AE, VAE, L1, MSE+SSIM, latent-size, batch-size, crop/preprocessing, extended-epoch, learning-rate-scheduler, and BatchNorm ablation runs,
 - estimate anomaly thresholds from validation reconstruction errors,
 - detect pathological scans (`CNV`, `DME`, `DRUSEN`) through reconstruction-based anomaly scores,
 - export figures, metrics, comparison tables, patient-level analysis, bootstrap confidence intervals, explainability grids, and report assets.
@@ -13,17 +13,17 @@ This repository implements the final-stage pipeline for the course project:
 The strongest image-level setup is:
 
 ```text
-ae_mse_l128_e60_plateau + topk_mse_5
+ae_mse_l128_e60_plateau_bn + topk_mse_5
 ```
 
-This uses a convolutional autoencoder trained only on normal OCT images for 60 epochs with `ReduceLROnPlateau`, then evaluates anomalies with the mean of the top 5% pixel-wise squared residuals.
+This uses a convolutional autoencoder trained only on normal OCT images for 60 epochs with `BatchNorm2d` and `ReduceLROnPlateau`, then evaluates anomalies with the mean of the top 5% pixel-wise squared residuals.
 
 | Evaluation level | Run / score | AUROC | F1 | Recall | Precision | FPR |
 |---|---|---:|---:|---:|---:|---:|
-| Image-level | `ae_mse_l128_e60_plateau + topk_mse_5` | 0.9474 | 0.8515 | 0.7493 | 0.9860 | 0.0320 |
-| Patient-level | `ae_mse_l128_e60_plateau + mean(topk_mse_5)` | 0.9516 | 0.9066 | 0.8502 | 0.9711 | 0.0760 |
+| Image-level | `ae_mse_l128_e60_plateau_bn + topk_mse_5` | 0.9487 | 0.8593 | 0.7613 | 0.9862 | 0.0320 |
+| Patient-level | `ae_mse_l128_e60_plateau_bn + mean(topk_mse_5)` | 0.9513 | 0.9089 | 0.8541 | 0.9712 | 0.0760 |
 
-Important: the project intentionally keeps weaker trials too. VAE, L1 loss, MSE+SSIM loss, crop variants, latent-size ablation, batch-size ablation, fixed-LR extended training, learning-rate scheduling, and score ensembles are all preserved so the final report can discuss what was tried and what did not improve the baseline.
+Important: the project intentionally keeps weaker trials too. VAE, L1 loss, MSE+SSIM loss, crop variants, latent-size ablation, batch-size ablation, fixed-LR extended training, learning-rate scheduling, BatchNorm, and score ensembles are all preserved so the final report can discuss what was tried and what did not improve the baseline.
 
 ## Expected dataset layout
 
@@ -102,16 +102,22 @@ Run the learning-rate-scheduler candidate:
 ..\odev2\.venv\Scripts\python.exe run_experiments.py --config configs/scheduler_ablation.json --clean-outputs --write-logs --aggregate-config-only --comparison-root outputs/comparison_scheduler
 ```
 
+Run the BatchNorm candidate:
+
+```powershell
+..\odev2\.venv\Scripts\python.exe run_experiments.py --config configs/batchnorm_ablation.json --clean-outputs --write-logs --aggregate-config-only --comparison-root outputs/comparison_batchnorm
+```
+
 Evaluate alternative anomaly scores for a completed checkpoint without retraining:
 
 ```powershell
-..\odev2\.venv\Scripts\python.exe score_ablation.py --run-id ae_mse_l128_e60_plateau --eval-batch-size 128 --num-workers 8
+..\odev2\.venv\Scripts\python.exe score_ablation.py --run-id ae_mse_l128_e60_plateau_bn --eval-batch-size 128 --num-workers 0
 ..\odev2\.venv\Scripts\python.exe compare_score_ablations.py
 ```
 
 This creates `outputs/score_ablation/<run_id>/` with image-level metrics, patient-level metrics, bootstrap confidence intervals, threshold comparisons, class-wise summaries, ROC overlays, and top-k residual explainability grids.
 
-The final candidate checkpoint is kept under `outputs/experiments/ae_mse_l128_e60_plateau/saved_models/best_autoencoder.pt` so this score ablation can be reproduced without retraining the best model. Other per-run checkpoints remain ignored by default to keep the repository smaller.
+The final candidate checkpoint is kept under `outputs/experiments/ae_mse_l128_e60_plateau_bn/saved_models/best_autoencoder.pt` so this score ablation can be reproduced without retraining the best model. Other per-run checkpoints remain ignored by default to keep the repository smaller.
 
 Build the technical experiment ledger used as a final-report checklist:
 
@@ -119,7 +125,7 @@ Build the technical experiment ledger used as a final-report checklist:
 ..\odev2\.venv\Scripts\python.exe scripts/build_experiment_ledger.py
 ```
 
-This writes `outputs/experiment_ledger.csv` and `report/experiment_ledger.md`. The ledger intentionally includes both successful and unsuccessful trials so the final report can mention every attempted direction: AE/VAE, L1, MSE+SSIM, latent-size ablation, batch-size ablation, crop/preprocessing trials, learning-rate scheduling, score ablation, patient-level evaluation, bootstrap confidence intervals, and explainability outputs.
+This writes `outputs/experiment_ledger.csv` and `report/experiment_ledger.md`. The ledger intentionally includes both successful and unsuccessful trials so the final report can mention every attempted direction: AE/VAE, L1, MSE+SSIM, latent-size ablation, batch-size ablation, crop/preprocessing trials, learning-rate scheduling, BatchNorm, score ablation, patient-level evaluation, bootstrap confidence intervals, and explainability outputs.
 
 ## Smoke test without the real dataset
 

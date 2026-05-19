@@ -27,6 +27,7 @@ CLI_FIELDS = {
     "min_learning_rate": "--min-learning-rate",
     "num_workers": "--num-workers",
     "model_type": "--model-type",
+    "use_batch_norm": "--use-batch-norm",
     "loss_type": "--loss-type",
     "beta": "--beta",
     "default_percentile": "--default-percentile",
@@ -60,10 +61,14 @@ def build_command(experiment: dict[str, Any], clean_outputs: bool) -> list[str]:
     for key, flag in CLI_FIELDS.items():
         if key in experiment and experiment[key] is not None:
             value = experiment[key]
-            command.append(flag)
-            if isinstance(value, list):
+            if isinstance(value, bool):
+                if value:
+                    command.append(flag)
+            elif isinstance(value, list):
+                command.append(flag)
                 command.extend(str(item) for item in value)
             else:
+                command.append(flag)
                 command.append(str(value))
     return command
 

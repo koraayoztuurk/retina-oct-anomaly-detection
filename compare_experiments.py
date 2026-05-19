@@ -48,6 +48,7 @@ def load_experiment_summary(run_dir: Path) -> dict[str, Any]:
     row = {
         "run_id": config.get("run_id") or run_dir.name,
         "model_type": config.get("model_type"),
+        "use_batch_norm": config.get("use_batch_norm", False),
         "loss_type": config.get("loss_type"),
         "latent_dim": config.get("latent_dim"),
         "image_size": config.get("image_size"),
@@ -92,6 +93,7 @@ def load_baseline_outputs(baseline_root: Path) -> tuple[pd.DataFrame, pd.DataFra
             {
                 "run_id": "current_baseline",
                 "model_type": config.get("model_type", "ae"),
+                "use_batch_norm": config.get("use_batch_norm", False),
                 "loss_type": config.get("loss_type", "mse"),
                 "latent_dim": config.get("latent_dim", 128),
                 "image_size": config.get("image_size", 128),

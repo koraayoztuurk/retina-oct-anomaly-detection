@@ -1,0 +1,2 @@
+run_id,model_type,use_batch_norm,loss_type,latent_dim,image_size,crop_mode,batch_size,default_percentile,threshold,best_epoch,best_val_loss,training_time_sec,auroc,f1,recall,precision,accuracy,fpr,tn,fp,fn,tp
+ae_mse_l128_e60_plateau_bn,ae,True,mse,128,128,none,32,95,0.0011832378804683,59,0.000644,3630,0.9126986666666668,0.8383685800604229,0.74,0.9668989547038328,0.786,0.076,231,19,195,555

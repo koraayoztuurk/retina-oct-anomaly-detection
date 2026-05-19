@@ -33,6 +33,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--report-template", default=None, help="Path to the IEEE DOCX template.")
     parser.add_argument("--run-id", default=None, help="Experiment id. Outputs are stored under outputs/experiments/<run-id>.")
     parser.add_argument("--model-type", choices=["ae", "vae"], default=None)
+    parser.add_argument("--use-batch-norm", action="store_true", default=None)
     parser.add_argument("--loss-type", choices=["mse", "l1", "mse_ssim", "vae_mse_kl"], default=None)
     parser.add_argument("--beta", type=float, default=None, help="KL weight for VAE runs.")
     parser.add_argument("--output-root", default=None, help="Direct output root override for this run.")
@@ -62,6 +63,7 @@ def apply_cli_overrides(config: dict, args: argparse.Namespace) -> dict:
         "report_template": args.report_template,
         "run_id": args.run_id,
         "model_type": args.model_type,
+        "use_batch_norm": args.use_batch_norm,
         "loss_type": args.loss_type,
         "beta": args.beta,
         "epochs": args.epochs,
@@ -110,6 +112,8 @@ def validate_config(config: dict) -> None:
         raise ValueError("loss_type=vae_mse_kl requires --model-type vae.")
     if config["model_type"] == "vae" and config["loss_type"] != "vae_mse_kl":
         raise ValueError("model_type=vae currently expects --loss-type vae_mse_kl.")
+    if not isinstance(config["use_batch_norm"], bool):
+        raise ValueError("use_batch_norm must be a boolean.")
 
 
 def score_type_for_config(config: dict) -> str:
@@ -135,6 +139,7 @@ def main() -> None:
         model_type=config["model_type"],
         latent_dim=config["latent_dim"],
         image_size=config["image_size"],
+        use_batch_norm=bool(config.get("use_batch_norm", False)),
     ).to(device)
     print(model)
     print(f"[INFO] Parameter count         : {count_parameters(model):,}")

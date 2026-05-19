@@ -1,0 +1,6 @@
+Run: ae_mse_l128_e60_plateau_bn
+Model: AE-MSE + BatchNorm + ReduceLROnPlateau
+Best epoch: 59
+Best val loss: 0.000644
+Raw MSE AUROC: 0.9127, F1: 0.8384
+Best score: topk_mse_5 AUROC 0.9487, F1 0.8593

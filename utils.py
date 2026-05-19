@@ -19,6 +19,7 @@ CONFIG: dict[str, Any] = {
     "report_template": "IEEE_Turkey_TUAC_Template_TR_2016_Final.docx",
     "run_id": None,
     "model_type": "ae",
+    "use_batch_norm": False,
     "loss_type": "mse",
     "beta": 1e-4,
     "seed": 42,
