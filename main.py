@@ -46,7 +46,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--num-workers", type=int, default=None)
     parser.add_argument("--default-percentile", type=int, default=None)
     parser.add_argument("--threshold-percentiles", type=int, nargs="+", default=None)
-    parser.add_argument("--clean-outputs", action="store_true", help="Delete outputs/ before running.")
+    parser.add_argument("--clean-outputs", action="store_true", help="Delete this run output folder before running.")
     parser.add_argument("--skip-report", action="store_true", help="Skip ara-report asset generation for experiment runs.")
     return parser.parse_args()
 

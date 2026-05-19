@@ -16,7 +16,7 @@ from torchvision import transforms
 from utils import CLASS_NAMES, SUPPORTED_EXTENSIONS, ensure_dataset_root
 
 
-PATIENT_ID_PATTERN = re.compile(r"^[A-Za-z]+-(\d+)-")
+PATIENT_ID_PATTERN = re.compile(r"^([A-Za-z]+)-(\d+)-")
 
 
 @dataclass(frozen=True)
@@ -253,11 +253,12 @@ class RetinaMarginCrop:
 def parse_patient_id(path: Path) -> str:
     match = PATIENT_ID_PATTERN.match(path.stem)
     if match:
-        return match.group(1)
+        return f"{match.group(1).upper()}-{match.group(2)}"
     parts = path.stem.split("-")
-    if len(parts) >= 2 and parts[1]:
-        return parts[1]
-    return path.stem
+    class_prefix = path.parent.name.upper() if path.parent.name else "UNKNOWN"
+    if parts and parts[0]:
+        return f"{class_prefix}-{parts[0]}"
+    return f"{class_prefix}-{path.stem}"
 
 
 def collect_image_paths(directory: Path) -> list[Path]:

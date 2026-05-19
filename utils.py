@@ -41,6 +41,37 @@ CLASS_NAMES = ("NORMAL", "CNV", "DME", "DRUSEN")
 SUPPORTED_EXTENSIONS = (".jpeg", ".jpg", ".png", ".bmp", ".tif", ".tiff")
 
 
+def is_relative_to(path: Path, parent: Path) -> bool:
+    try:
+        path.relative_to(parent)
+        return True
+    except ValueError:
+        return False
+
+
+def validate_clean_output_root(output_root: Path) -> Path:
+    resolved = output_root.resolve()
+    project_root = Path(__file__).resolve().parent
+    allowed_roots = [project_root / "outputs", project_root / "tmp"]
+    shared_roots = {root.resolve() for root in allowed_roots}
+    drive_root = Path(resolved.anchor).resolve()
+    forbidden_roots = {
+        project_root.resolve(),
+        project_root.parent.resolve(),
+        Path.home().resolve(),
+        drive_root,
+    }
+
+    if resolved in forbidden_roots or resolved in shared_roots:
+        raise ValueError(f"Refusing to delete unsafe output root: {resolved}")
+
+    if not any(is_relative_to(resolved, root.resolve()) for root in allowed_roots):
+        allowed = ", ".join(str(root) for root in allowed_roots)
+        raise ValueError(f"Refusing to delete output root outside allowed folders ({allowed}): {resolved}")
+
+    return resolved
+
+
 def clone_config() -> dict[str, Any]:
     return deepcopy(CONFIG)
 
@@ -90,7 +121,7 @@ def prepare_output_dirs(config: dict[str, Any], clean: bool = True) -> dict[str,
     }
 
     if clean and output_root.exists():
-        shutil.rmtree(output_root)
+        shutil.rmtree(validate_clean_output_root(output_root))
 
     for path in directories.values():
         path.mkdir(parents=True, exist_ok=True)

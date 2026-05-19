@@ -1,7 +1,7 @@
 {
   "run_id": "ae_mse_l128_e60",
   "score_mode": "topk_mse_5",
-  "threshold": 0.014186680316925,
+  "threshold": 0.01418669950217,
   "auroc": 0.945712,
   "accuracy": 0.799,
   "precision": 0.9910554561717352,

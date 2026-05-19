@@ -21,7 +21,7 @@ This uses a convolutional autoencoder trained only on normal OCT images for 60 e
 | Evaluation level | Run / score | AUROC | F1 | Recall | Precision | FPR |
 |---|---|---:|---:|---:|---:|---:|
 | Image-level | `ae_mse_l128_e60 + topk_mse_5` | 0.9457 | 0.8464 | 0.7387 | 0.9911 | 0.0200 |
-| Patient-level | `ae_mse_l128_e60 + mean(topk_mse_5)` | 0.9456 | 0.8936 | 0.8292 | 0.9688 | 0.0872 |
+| Patient-level | `ae_mse_l128_e60 + mean(topk_mse_5)` | 0.9485 | 0.8975 | 0.8346 | 0.9706 | 0.0760 |
 
 Important: the project intentionally keeps weaker trials too. VAE, L1 loss, MSE+SSIM loss, crop variants, latent-size ablation, batch-size ablation, and score ensembles are all preserved so the final report can discuss what was tried and what did not improve the baseline.
 
@@ -44,7 +44,7 @@ data/
       DRUSEN/
 ```
 
-The training pipeline uses only `train/NORMAL` for model fitting. Validation is created by patient-level splitting inside `train/NORMAL`. Testing uses every class under `test/`. The real dataset is intentionally ignored by Git.
+The training pipeline uses only `train/NORMAL` for model fitting. Validation is created by patient-level splitting inside `train/NORMAL`. Testing uses every class under `test/`. Patient IDs preserve the class prefix (for example `NORMAL-0101` and `CNV-0101`) to avoid cross-class collisions during patient-level aggregation. The real dataset is intentionally ignored by Git.
 
 ## Environment
 
@@ -105,6 +105,8 @@ Evaluate alternative anomaly scores for a completed checkpoint without retrainin
 
 This creates `outputs/score_ablation/<run_id>/` with image-level metrics, patient-level metrics, bootstrap confidence intervals, threshold comparisons, class-wise summaries, ROC overlays, and top-k residual explainability grids.
 
+The final candidate checkpoint is kept under `outputs/experiments/ae_mse_l128_e60/saved_models/best_autoencoder.pt` so this score ablation can be reproduced without retraining the best model. Other per-run checkpoints remain ignored by default to keep the repository smaller.
+
 Build the technical experiment ledger used as a final-report checklist:
 
 ```powershell
@@ -126,6 +128,12 @@ Then run:
 ```powershell
 ..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_ae --model-type ae --loss-type mse --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_ae --skip-report --clean-outputs
 ..\odev2\.venv\Scripts\python.exe main.py --data-root data/mock_oct2017 --run-id smoke_vae --model-type vae --loss-type vae_mse_kl --epochs 2 --batch-size 8 --num-workers 0 --output-root tmp/smoke_vae --skip-report --clean-outputs
+```
+
+Run the lightweight unit checks:
+
+```powershell
+..\odev2\.venv\Scripts\python.exe -m unittest discover -s tests
 ```
 
 ## Generated outputs

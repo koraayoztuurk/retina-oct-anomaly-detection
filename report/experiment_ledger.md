@@ -13,7 +13,7 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 ## En İyi Adaylar
 
 - Image-level final adayı: `ae_mse_l128_e60` + `topk_mse_5`; AUROC=0.9457, F1=0.8464, Recall=0.7387, Precision=0.9911, FPR=0.0200.
-- Patient-level final adayı: `ae_mse_l128_e60` + `mean` aggregation + `topk_mse_5`; AUROC=0.9456, F1=0.8936, Recall=0.8292, Precision=0.9688, FPR=0.0872.
+- Patient-level final adayı: `ae_mse_l128_e60` + `mean` aggregation + `topk_mse_5`; AUROC=0.9485, F1=0.8975, Recall=0.8346, Precision=0.9706, FPR=0.0760.
 
 ## Rapor Checklist
 
@@ -49,8 +49,12 @@ Bu dosya final raporu yazılırken hiçbir denemenin unutulmaması için tutulmu
 | score_ablation_image_level | ae_mse_l256_bs16 |  |  | topk_mse_5 |  |  |  | 0.9454 | 0.8354 | 0.7240 | 0.9873 | 0.0280 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | ae_mse_l64 |  |  | topk_mse_5 |  |  |  | 0.9389 | 0.8311 | 0.7187 | 0.9854 | 0.0320 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
 | score_ablation_image_level | vae_msekl_l128 |  |  | topk_mse_10 |  |  |  | 0.8840 | 0.7453 | 0.6027 | 0.9762 | 0.0440 |  | Mevcut checkpoint yeniden eğitilmeden farklı anomaly score'lar ile değerlendirildi; top-k residual skorlar en güçlü çıktı. |
-| score_ablation_patient_level | ae_mse_l128 |  |  | topk_mse_5 |  |  |  | 0.9459 | 0.8921 | 0.8251 | 0.9709 | 0.0805 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
-| score_ablation_patient_level | ae_mse_l128_e60 |  |  | topk_mse_5 |  |  |  | 0.9456 | 0.8936 | 0.8292 | 0.9688 | 0.0872 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l128 |  |  | topk_mse_5 |  |  |  | 0.9476 | 0.8973 | 0.8327 | 0.9727 | 0.0702 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l128_e60 |  |  | topk_mse_5 |  |  |  | 0.9485 | 0.8975 | 0.8346 | 0.9706 | 0.0760 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l256 |  |  | topk_mse_5 |  |  |  | 0.9477 | 0.8961 | 0.8307 | 0.9727 | 0.0702 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l256_bs16 |  |  | topk_mse_5 |  |  |  | 0.9501 | 0.8956 | 0.8346 | 0.9662 | 0.0877 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | ae_mse_l64 |  |  | topk_mse_5 |  |  |  | 0.9421 | 0.8917 | 0.8249 | 0.9703 | 0.0760 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
+| score_ablation_patient_level | vae_msekl_l128 |  |  | topk_mse_10 |  |  |  | 0.8895 | 0.8284 | 0.7374 | 0.9451 | 0.1287 |  | Hasta seviyesinde mean aggregation ile hesaplandı. |
 | preprocessing_preview | border_crop_preview |  |  |  |  |  | ConservativeBorderCrop |  |  |  |  |  |  | Sadece kenar boşluklarını azaltan daha konservatif kırpma önizlemesi üretildi; full training'e alınmadı. |
 | preprocessing_preview | content_crop_preview |  |  |  |  |  | SafeContentCrop |  |  |  |  |  |  | İlk içerik tabanlı kırpma bazı görüntülerde fazla agresif bulundu; yine de full training denendi ve genel performansı düşürdü. |
 | preprocessing_preview | retina_margin_crop_preview |  |  |  |  |  | RetinaMarginCrop |  |  |  |  |  |  | Retina sinyaline göre üst/alt boşluk bırakan kırpma denendi; DRUSEN yakalama arttı fakat genel metrikler baseline'ın gerisinde kaldı. |

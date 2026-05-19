@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from compare_experiments import aggregate_experiments
+from utils import validate_clean_output_root
 
 
 CLI_FIELDS = {
@@ -66,10 +67,12 @@ def build_command(experiment: dict[str, Any], clean_outputs: bool) -> list[str]:
 def clean_run_dir(run_dir: Path, experiments_root: Path) -> None:
     resolved_root = experiments_root.resolve()
     resolved_run_dir = run_dir.resolve()
+    if resolved_run_dir == resolved_root:
+        raise ValueError(f"Refusing to delete experiments root directly: {run_dir}")
     if resolved_root not in [resolved_run_dir, *resolved_run_dir.parents]:
         raise ValueError(f"Refusing to delete run directory outside experiments root: {run_dir}")
     if run_dir.exists():
-        shutil.rmtree(run_dir)
+        shutil.rmtree(validate_clean_output_root(run_dir))
 
 
 def parse_args() -> argparse.Namespace:

@@ -257,10 +257,16 @@ def build_comparison_tables(
 def aggregate_patient_scores(df: pd.DataFrame, score_modes: list[str], aggregation: str) -> pd.DataFrame:
     rows: list[dict[str, Any]] = []
     for patient_id, group in df.groupby("patient_id", sort=True):
+        class_names = sorted(group["class_name"].unique())
+        if len(class_names) > 1:
+            raise ValueError(
+                "Patient-level aggregation found mixed classes for "
+                f"patient_id={patient_id}: {class_names}. Patient IDs must be class-aware."
+            )
         row: dict[str, Any] = {
             "path": f"patient:{patient_id}",
             "patient_id": patient_id,
-            "class_name": "+".join(sorted(group["class_name"].unique())),
+            "class_name": class_names[0],
             "label": int(group["label"].max()),
             "sample_count": int(len(group)),
         }
